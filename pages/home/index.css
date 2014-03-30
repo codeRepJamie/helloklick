@@ -1,0 +1,479 @@
+@font-face {
+  font-family: HelveticaLight;
+  src: local("Helvetica Neue Light"),
+       url(font/HelveticaNeueLight.ttf);
+}
+.color_select li{
+	background:url(images/sprite.png) no-repeat;
+}
+.btn{
+	background-color:#ac1616;
+	display:inline-block;
+	border-radius:3px;
+	color:#FFF;
+	text-align:center;
+}
+.btn:hover{
+	text-decoration:none;
+}
+#home .container {
+}
+
+#home .wrapper {
+    min-width : 1200px;
+}
+
+#home .wrapper .header {
+    width         : 100%;
+    border-bottom : 1px solid #ededed;
+     position      : absolute;
+	top:0;
+	left:0;
+    background    : rgba(255, 255, 255, 0.2);
+	z-index:9999;
+}
+
+#home .wrapper .header .navbar {
+    height : 72px;
+    margin : 0 auto;
+    width  : 1200px;
+}
+
+#home .wrapper .header .navbar .logo {
+    float   : left;
+    height  : 72px;
+    width   : 72px;
+    display : inline-block;
+    background : url(images/logo.gif) center center no-repeat;
+}
+
+#home .wrapper .header .navbar ul {
+    float       : right;
+    line-height : 24px;
+    margin      : 24px 0px;
+}
+
+#home .wrapper .header .navbar ul li {
+    float : left;
+}
+
+#home .wrapper .header .navbar ul li a {
+    color           : #999;
+    display         : block;
+    font-size       : 16px;
+    margin          : 0 30px 0 30px;
+    text-decoration : none;
+}
+
+#home .wrapper .header .navbar a:hover {
+    color : #a91815;
+}
+
+#home .wrapper .header .navbar ul li .vline {
+    display     : block;
+    width       : 1px;
+    height      : 20px;
+    margin      : 2px 20px 2px 0px;
+    overflow    : hidden;
+    border-left : 1px solid #999999;
+}
+
+#home .wrapper .header .navbar ul li .button {
+    height           : 24px;
+    width            : 56px;
+    padding          : 0px;
+    line-height      : 24px;
+    color            : #ffffff;
+    text-align       : center;
+    margin           : 0px 10px;
+    background-color : #ac1617;
+}
+
+#home .wrapper .header .navbar ul li .button#btnsignin {
+    background-color  : #ac1617;
+}
+
+#home .wrapper .header .navbar ul li .button#btnsignup {
+    background-color  : #999999;
+}
+
+#home .wrapper .gallery {
+    clear : both;
+}
+
+#home .wrapper .gallery .slides {
+}
+
+#home .wrapper .gallery .buttons {
+    position : fixed;
+    right    : 77px;
+    top      : 50%;
+	z-index:99999;
+}
+
+#home .wrapper .gallery .buttons .indicator {
+    cursor     : pointer;
+    margin     : 15px 0px;
+    width      : 14px;
+    height     : 14px;
+    border-radius : 8px;
+    background : rgba(0, 0, 0, 0.4);
+}
+
+#home .wrapper .gallery .buttons .indicator.selected {
+    background : rgba(188, 40, 40, 0.4);
+}
+
+#home .wrapper .gallery .slide {
+    clear           : both;
+    background-size : cover;
+    position        : relative;
+	background-color:#fefefe;
+}
+
+#home .wrapper .gallery .slide .section {
+    margin     : 0 auto;
+	margin-top: -300px;
+    /* min-height : 600px; */
+    height : 600px;
+	width:1200px;
+    top        : 50%;
+    left       : 0px;
+    right      : 0px;
+    /* padding    : 70px 0px; */
+    position   : absolute;
+	color:#444;
+}
+#home .wrapper .gallery .slide01 .section .titleTop{
+	margin-top:30px;
+}
+#home .wrapper .gallery .slide01 .section p:last-child {
+    display     : block;
+    line-height : 40px;
+    left        : 0px;
+    right       : 0px;
+    bottom      : -10px;
+    text-align  : center;
+    text-size   : 16px;
+    position    : absolute;
+}
+
+#home .wrapper .gallery .slide01 .left {
+	width:100%;
+    top        : 0px;
+    bottom     : 0px;
+    left       : 0px;
+    right      : 0px;
+    position   : absolute;
+    background : url(images/box1/bg_banner1.png) center left no-repeat;
+}
+
+#home .wrapper .gallery .slide01 .right {
+	width:100%;
+    top        : 0px;
+    bottom     : 0px;
+    left       : 0px;
+    right      : 0px;
+    position   : absolute;
+    background : url(images/box1/bg_banner2.png) center right no-repeat;
+}
+
+#home .wrapper .gallery .slide02 {
+    position            : relative;
+    background-image    : url(images/box2/bg_box2.jpg);
+    background-position : center center;
+    background-repeat   : no-repeat;
+}
+
+#home .wrapper .gallery .slide02 .section .button.play {
+    width       : 127px;
+    height      : 127px;
+    display     : block;
+    position    : absolute;
+    top         : 50%;
+    margin-left : 254px;
+    margin-top  : -63.5px;
+    background  : url(images/box2/video_btn.png) center center no-repeat;
+}
+
+#home .wrapper .gallery .slide02 .section .text {
+    width        : 500px;
+    top          : 50%;
+    margin-left  : auto;
+    margin-top  : -162px;
+    right        : 50px;
+    position     : absolute;
+}
+
+#home .wrapper .gallery .slide02 .text b {
+    color     : #bc2828;
+    font-size : 80px;
+}
+
+#home .wrapper .gallery .slide02 .text dl dt {
+    color     : #ffffff;
+    font-size : 40px;
+    margin    : 20px 0px;
+}
+
+#home .wrapper .gallery .slide02 .text dl dd {
+    color       : #7c7d79;
+    font-size   : 20px;
+    line-height : 30px;
+    margin-top  : 30px;
+}
+
+#home .wrapper .gallery .slide03 {
+    /* position            : relative; */
+    background-image    : url(images/box3/bg_box3.jpg);
+    background-position : center center;
+    background-relative : no-repeat;
+}
+
+#home .wrapper .gallery .slide03 .section .title_img {
+    margin-bottom:30px;
+	/* position : absolute;
+    top      : 70px; */
+
+}
+
+#home .wrapper .gallery .slide03 .section ul li {
+    /* float  : left; 
+    height : 400px;
+    width  : 45%;
+    border : 1px solid red;*/
+	position:absolute;
+}
+#home .wrapper .gallery .slide03 .section ul .part1{
+	top:85px;
+	left:360px;
+}
+#home .wrapper .gallery .slide03 .section ul .part2{
+	top:103px;
+	right:491px;
+}
+#home .wrapper .gallery .slide03 .section ul .part3{
+	bottom:0px;
+	left:380px;
+}
+#home .wrapper .gallery .slide03 .section ul .part4{
+	bottom:0px;
+	right:456px;
+}
+#home .wrapper .gallery .slide03 .section ul li01 {
+    /* text-align : right; */
+}
+
+#home .wrapper .gallery .slide03 .section ul li01 img {
+    margin-right : 50px;
+}
+#home .wrapper .gallery .slide03 .section ul li02 img {
+    margin-top : 30px;
+}
+#home .wrapper .gallery .slide04 .section .title_img{
+	margin-bottom:30px;
+}
+#home .wrapper .gallery .slide05{
+	/* background:url(images/box5/baozhuang.png) 0 center no-repeat; */
+	/*background-size:contain;*/
+}
+/* #home .wrapper .gallery .slide:nth-child(4){
+    background-image    : url(images/box4/bg_box4.jpg);
+    background-position : center center;
+    background-relative : no-repeat;
+} */
+#home .wrapper .gallery .slide .lfColumn,#home .wrapper .gallery .slide .rgColumn{
+	float:left;
+	display:inline;
+	width:50%;
+}
+#home .wrapper .gallery .slide .lfColumn{
+	height:100%;
+	margin-left:-30px;
+}
+#home .wrapper .gallery .slide .rgColumn .textField{
+	margin-left:140px;
+}
+.wrapper .gallery .slide .rgColumn .title em{
+	color:#ac1616;
+	margin-right:15px;
+}
+.wrapper .gallery .slide .rgColumn .sub{
+	color:#939393;
+	width:430px;
+	line-height:1.8em;
+
+}
+.wrapper .gallery .slide .rgColumn .intro{
+	margin-top:30px;
+}
+.wrapper .gallery .slide .rgColumn .price{
+	color: #AC1616;
+	margin-top:30px;
+}
+.wrapper .gallery .slide .rgColumn .color_select{
+	margin-top:40px;
+}
+.wrapper .gallery .slide .rgColumn .select_sub{
+	margin-top:5px;
+}
+.wrapper .gallery .slide .rgColumn .btn{
+	width:170px;
+	height:50px;
+	line-height:50px;
+	margin-top:45px;
+}
+#home .wrapper .gallery .slide .section img {
+    display : block;
+    margin  : 0 auto;
+}
+
+#home .wrapper .footer {
+    height     : 240px;
+    background : #333333;
+}
+
+#home .wrapper .footer .navbar {
+    width   : 1200px;
+    margin  : 0 auto;
+    padding : 30px 0px;
+}
+
+#home .wrapper .footer .navbar dl {
+    color : #a5a5a5;
+    float : left;
+    width : 30%;
+}
+
+#home .wrapper .footer .navbar dl dt {
+    color       : white;
+    font-size   : 18px;
+    font-weight : bold;
+    line-height : 60px;
+}
+#home .wrapper .gallery .slide .support{
+	position:absolute;
+	bottom:0;
+	left:0;
+	width:420px;
+}
+#home .wrapper .gallery .slide .support h2{
+	margin-bottom:15px;
+}
+#home .wrapper .gallery .slide .support a,#home .wrapper .gallery .slide .support h2{
+	color:#bc2828;
+}
+#home .wrapper .gallery .slide .download{
+	position:absolute;
+	right:0;
+	bottom:0;
+}
+#home .wrapper .gallery .slide .download img,#home .wrapper .gallery .slide .download .textField{
+	float:left;
+	display:inline;
+}
+#home .wrapper .gallery .slide .download .textField{
+	margin-left:15px;
+	color:#8b8b8b;
+	margin-top:5px;
+}
+.color_select li{
+	width:47px;
+	height:47px;
+	overflow:hidden;
+	float:left;
+	cursor:pointer;
+	margin-right:5px;
+}
+.color_select .picker01{
+	background-position:0 0;
+}
+.color_select .picker02{
+	background-position:-60px 0;
+}
+.color_select .picker03{
+	background-position:-117px 0;
+}
+.color_select .selected{
+	background-position-y:-56px;
+}
+.detail01{
+	left: 823px;
+	top: 173px;
+}
+.detail02{
+	left: -20px;
+	bottom: 30px;
+}
+.detail03{
+	left: 859px;
+	bottom: 30px;
+}
+.detail{
+	width:275px;
+	position:absolute;
+}
+.detail .line{
+	border-bottom:1px solid #8A8A8A;
+	position:absolute;
+	top:22px;
+	left:-130px;
+	width:130px;
+	height:0;
+}
+.detail .dot{
+	width:19px;
+	height:19px;
+	float:left;
+	border-bottom:1px solid #8A8A8A;
+	padding-bottom:3px;
+}
+.detail .title{
+	line-height:19px;
+}
+.detail span{
+	color:#FFF;
+	line-height:19px;
+	float:left;
+	padding-left:5px;
+	padding-bottom:3px;	
+	border-bottom:1px solid #8A8A8A;
+}
+.detail p{
+	line-height:24px;
+	color:#8a8a8a;
+	margin-top:15px;
+}
+.left_detail .title{
+	text-align:right;
+}
+.left_detail span{
+	padding-left:0px;
+	padding-right:5px;
+}
+.left_detail span,.left_detail .dot{
+	float:right;
+}
+.left_detail .line{
+	left:auto;
+	right:-130px;
+}
+.left_detail p{
+	text-align:right;
+}
+.detail .btn{
+	background-color:#474747;
+	width:100px;
+	height:37px;
+	line-height:37px;
+	margin-top:40px;
+}
+.detail01 .dot{
+	background:url(images/num1.png) no-repeat;
+}
+.detail02 .dot{
+	background:url(images/num2.png) no-repeat;
+}
+.detail03 .dot{
+	background:url(images/num3.png) no-repeat;
+}
