@@ -6972,150 +6972,217 @@ baidu.plugin = function(chainName, copy, fn, constructor){
 };
 
 
-/// Tangram 1.x Code Start
-
-
-baidu.url = baidu.url || {};
-
-/// Tangram 1.x Code End
-
-/// Tangram 1.x Code Start
-
-
-baidu.url.escapeSymbol = function(source) {
-    
-    //TODO: 之前使用\s来匹配任意空白符
-    //发现在ie下无法匹配中文全角空格和纵向指标符\v，所以改\s为\f\r\n\t\v以及中文全角空格和英文空格
-    //但是由于ie本身不支持纵向指标符\v,故去掉对其的匹配，保证各浏览器下效果一致
-    return String(source).replace(/[#%&\+=\/\\\s\u3000\f\r\n\t]/g, function(txt){
-        txt = txt.charCodeAt();
-        return txt === 0x3000 ? '%E3%80%80' : '%' + (0x100 + txt).toString(16).substring(1).toUpperCase();
-    });
-};
-/// Tangram 1.x Code End
-
-/// Tangram 1.x Code Start
+baidu.swf = baidu.swf || {};
 
 
 
-baidu.ajax.form = function (form, options) {
-    options = options || {};
-    var elements    = form.elements,
-        len         = elements.length,
-        method      = form.getAttribute('method'),
-        url         = form.getAttribute('action'),
-        replacer    = options.replacer || function (value, name) {
-            return value;
-        },
-        sendOptions = {},
-        data = [],
-        i, item, itemType, itemName, itemValue, 
-        opts, oi, oLen, oItem;
-        
-    
-    function addData(name, value) {
-        data.push(name + '=' + value);
-    }
-    
-    // 复制发送参数选项对象
-    for (i in options) {
-        if (options.hasOwnProperty(i)) {
-            sendOptions[i] = options[i];
+baidu.swf.version = (function () {
+    var n = navigator;
+    if (n.plugins && n.mimeTypes.length) {
+        var plugin = n.plugins["Shockwave Flash"];
+        if (plugin && plugin.description) {
+            return plugin.description
+                    .replace(/([a-zA-Z]|\s)+/, "")
+                    .replace(/(\s)+r/, ".") + ".0";
+        }
+    } else if (window.ActiveXObject && !window.opera) {
+        for (var i = 12; i >= 2; i--) {
+            try {
+                var c = new ActiveXObject('ShockwaveFlash.ShockwaveFlash.' + i);
+                if (c) {
+                    var version = c.GetVariable("$version");
+                    return version.replace(/WIN/g,'').replace(/,/g,'.');
+                }
+            } catch(e) {}
         }
     }
+})();
+
+
+
+baidu.swf.createHTML = function (options) {
+    options = options || {};
+    var version = baidu.swf.version, 
+        needVersion = options['ver'] || '6.0.0', 
+        vUnit1, vUnit2, i, k, len, item, tmpOpt = {},
+        encodeHTML = baidu.string.encodeHTML;
     
-    for (i = 0; i < len; i++) {
-        item = elements[i];
-        itemName = item.name;
-        
-        // 处理：可用并包含表单name的表单项
-        if (!item.disabled && itemName) {
-            itemType = item.type;
-            itemValue = baidu.url.escapeSymbol(item.value);
-        
-            switch (itemType) {
-            // radio和checkbox被选中时，拼装queryString数据
-            case 'radio':
-            case 'checkbox':
-                if (!item.checked) {
-                    break;
-                }
-                
-            // 默认类型，拼装queryString数据
-            case 'textarea':
-            case 'text':
-            case 'password':
-            case 'hidden':
-            case 'select-one':
-                addData(itemName, replacer(itemValue, itemName));
+    // 复制options，避免修改原对象
+    for (k in options) {
+        tmpOpt[k] = options[k];
+    }
+    options = tmpOpt;
+    
+    // 浏览器支持的flash插件版本判断
+    if (version) {
+        version = version.split('.');
+        needVersion = needVersion.split('.');
+        for (i = 0; i < 3; i++) {
+            vUnit1 = parseInt(version[i], 10);
+            vUnit2 = parseInt(needVersion[i], 10);
+            if (vUnit2 < vUnit1) {
                 break;
-                
-            // 多行选中select，拼装所有选中的数据
-            case 'select-multiple':
-                opts = item.options;
-                oLen = opts.length;
-                for (oi = 0; oi < oLen; oi++) {
-                    oItem = opts[oi];
-                    if (oItem.selected) {
-                        addData(itemName, replacer(oItem.value, itemName));
-                    }
-                }
-                break;
+            } else if (vUnit2 > vUnit1) {
+                return ''; // 需要更高的版本号
             }
         }
+    } else {
+        return ''; // 未安装flash插件
     }
     
-    // 完善发送请求的参数选项
-    sendOptions.data = data.join('&');
-    sendOptions.method = form.getAttribute('method') || 'GET';
+    var vars = options['vars'],
+        objProperties = ['classid', 'codebase', 'id', 'width', 'height', 'align'];
     
-    // 发送请求
-    return baidu.ajax.request(url, sendOptions);
+    // 初始化object标签需要的classid、codebase属性值
+    options['align'] = options['align'] || 'middle';
+    options['classid'] = 'clsid:d27cdb6e-ae6d-11cf-96b8-444553540000';
+    options['codebase'] = 'http://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,0,0';
+    options['movie'] = options['url'] || '';
+    delete options['vars'];
+    delete options['url'];
+    
+    // 初始化flashvars参数的值
+    if ('string' == typeof vars) {
+        options['flashvars'] = vars;
+    } else {
+        var fvars = [];
+        for (k in vars) {
+            item = vars[k];
+            fvars.push(k + "=" + encodeURIComponent(item));
+        }
+        options['flashvars'] = fvars.join('&');
+    }
+    
+    // 构建IE下支持的object字符串，包括属性和参数列表
+    var str = ['<object '];
+    for (i = 0, len = objProperties.length; i < len; i++) {
+        item = objProperties[i];
+        str.push(' ', item, '="', encodeHTML(options[item]), '"');
+    }
+    str.push('>');
+    var params = {
+        'wmode'             : 1,
+        'scale'             : 1,
+        'quality'           : 1,
+        'play'              : 1,
+        'loop'              : 1,
+        'menu'              : 1,
+        'salign'            : 1,
+        'bgcolor'           : 1,
+        'base'              : 1,
+        'allowscriptaccess' : 1,
+        'allownetworking'   : 1,
+        'allowfullscreen'   : 1,
+        'seamlesstabbing'   : 1,
+        'devicefont'        : 1,
+        'swliveconnect'     : 1,
+        'flashvars'         : 1,
+        'movie'             : 1
+    };
+    
+    for (k in options) {
+        item = options[k];
+        k = k.toLowerCase();
+        if (params[k] && (item || item === false || item === 0)) {
+            str.push('<param name="' + k + '" value="' + encodeHTML(item) + '" />');
+        }
+    }
+    
+    // 使用embed时，flash地址的属性名是src，并且要指定embed的type和pluginspage属性
+    options['src']  = options['movie'];
+    options['name'] = options['id'];
+    delete options['id'];
+    delete options['movie'];
+    delete options['classid'];
+    delete options['codebase'];
+    options['type'] = 'application/x-shockwave-flash';
+    options['pluginspage'] = 'http://www.macromedia.com/go/getflashplayer';
+    
+    
+    // 构建embed标签的字符串
+    str.push('<embed');
+    // 在firefox、opera、safari下，salign属性必须在scale属性之后，否则会失效
+    // 经过讨论，决定采用BT方法，把scale属性的值先保存下来，最后输出
+    var salign;
+    for (k in options) {
+        item = options[k];
+        if (item || item === false || item === 0) {
+            if ((new RegExp("^salign\x24", "i")).test(k)) {
+                salign = item;
+                continue;
+            }
+            
+            str.push(' ', k, '="', encodeHTML(item), '"');
+        }
+    }
+    
+    if (salign) {
+        str.push(' salign="', encodeHTML(salign), '"');
+    }
+    str.push('></embed></object>');
+    
+    return str.join('');
 };
-/// Tangram 1.x Code End
+
+
+baidu.swf.create = function (options, target) {
+    options = options || {};
+    var html = baidu.swf.createHTML(options) 
+               || options['errorMessage'] 
+               || '';
+                
+    if (target && 'string' == typeof target) {
+        target = document.getElementById(target);
+    }
+    baidu.dom.insertHTML( target || document.body ,'beforeEnd',html );
+};
+
+
+
+
+
+
+baidu.lang.toArray = function (source) {
+    if (source === null || source === undefined)
+        return [];
+    if (baidu.lang.isArray(source))
+        return source;
+
+    // The strings and functions also have 'length'
+    if (typeof source.length !== 'number' || typeof source === 'string' || baidu.lang.isFunction(source)) {
+        return [source];
+    }
+
+    //nodeList, IE 下调用 [].slice.call(nodeList) 会报错
+    if (source.item) {
+        var l = source.length, array = new Array(l);
+        while (l--)
+            array[l] = source[l];
+        return array;
+    }
+
+    return [].slice.call(source);
+};
+
+baidu.swf.getMovie = function (name) {
+    //ie9下, Object标签和embed标签嵌套的方式生成flash时,
+    //会导致document[name]多返回一个Object元素,而起作用的只有embed标签
+    var movie = document[name], ret;
+    return baidu.browser.ie == 9 ?
+        movie && movie.length ? 
+            (ret = baidu.array.remove(baidu.lang.toArray(movie),function(item){
+                return item.tagName.toLowerCase() != "embed";
+            })).length == 1 ? ret[0] : ret
+            : movie
+        : movie || window[name];
+};
+
+
+
+
 
 
 baidu.base = baidu.base || {blank: function(){}};
-
-/// Tangram 1.x Code Start
-//为兼容Tangram1.x的magic增加的接口
-
-
-baidu.dom._matchNode = function (element, direction, start) {
-    element = baidu.dom.g(element);
-
-    for (var node = element[start]; node; node = node[direction]) {
-        if (node.nodeType == 1) {
-            return node;
-        }
-    }
-
-    return null;
-};
-/// Tangram 1.x Code End
-
-
-/// Tangram 1.x Code Start
-
- 
-baidu.dom.setAttr = function (element, key, value) {
-    return baidu.dom(baidu.dom.g(element)).attr(key, value).get(0);
-};
-/// Tangram 1.x Code End
-
-/// Tangram 1.x Code Start
-
-baidu.dom.create = function(tagName, opt_attributes) {
-    var el = document.createElement(tagName),
-        attributes = opt_attributes || {};
-    for(var i in attributes){
-        baidu.dom.setAttr(el, i, attributes[i]);
-    }
-    return el;
-};
-/// Tangram 1.x Code End
-
-
 
 
 
@@ -7294,11 +7361,2908 @@ baidu.lang.Class = baidu.base.Class;
 
 
 
+
+baidu.createClass = function(constructor, type, options) {
+    constructor = baidu.isFunction(constructor) ? constructor : function(){};
+    options = typeof type == "object" ? type : options || {};
+
+    // 创建新类的真构造器函数
+    var fn = function(){
+        var me = this;
+
+        // 20101030 某类在添加该属性控制时，guid将不在全局instances里控制
+        options.decontrolled && (me._decontrol_ = true);
+
+        // 继承父类的构造器
+        fn.superClass.apply(me, arguments);
+
+        // 全局配置
+        for (var i in fn.options) me[i] = fn.options[i];
+
+        constructor.apply(me, arguments);
+
+        for (var i=0, reg=fn._reg_; reg && i<reg.length; i++) {
+            reg[i].apply(me, arguments);
+        }
+    };
+
+    baidu.extend(fn, {
+        superClass: options.superClass || baidu.base.Class
+
+        ,inherits: function(superClass){
+            if (typeof superClass != "function") return fn;
+
+            var C = function(){};
+            C.prototype = (fn.superClass = superClass).prototype;
+
+            // 继承父类的原型（prototype)链
+            var fp = fn.prototype = new C();
+            // 继承传参进来的构造器的 prototype 不会丢
+            baidu.extend(fn.prototype, constructor.prototype);
+            // 修正这种继承方式带来的 constructor 混乱的问题
+            fp.constructor = constructor;
+
+            return fn;
+        }
+
+        ,register: function(hook, methods) {
+            (fn._reg_ || (fn._reg_ = [])).push( hook );
+            methods && baidu.extend(fn.prototype, methods);
+            return fn;
+        }
+        
+        ,extend: function(json){baidu.extend(fn.prototype, json); return fn;}
+    });
+
+    type = baidu.isString(type) ? type : options.className || options.type;
+    baidu.isString(type) && (constructor.prototype._type_ = type);
+    baidu.isFunction(fn.superClass) && fn.inherits(fn.superClass);
+
+    return fn;
+};
+
+// 20111221 meizz   修改插件函数的存放地，重新放回类构造器静态属性上
+// 20121105 meizz   给类添加了几个静态属性方法：.options .superClass .inherits() .extend() .register()
+
+/// support magic - Tangram 1.x Code Start
+
+
+
+
+
+
+baidu.lang.createClass = baidu.createClass;
+
+// 20111221 meizz   修改插件函数的存放地，重新放回类构造器静态属性上
+
+/// support magic - Tangram 1.x Code End
+
+
+baidu.swf.Proxy = function(id, property, loadedHandler) {
+    
+    var me = this,
+        flash = this._flash = baidu.swf.getMovie(id),
+        timer;
+    if (! property) {
+        return this;
+    }
+    timer = setInterval(function() {
+        try {
+            
+            if (flash[property]) {
+                me._initialized = true;
+                clearInterval(timer);
+                if (loadedHandler) {
+                    loadedHandler();
+                }
+            }
+        } catch (e) {
+        }
+    }, 100);
+};
+
+baidu.swf.Proxy.prototype.getFlash = function() {
+    return this._flash;
+};
+
+baidu.swf.Proxy.prototype.isReady = function() {
+    return !! this._initialized;
+};
+
+baidu.swf.Proxy.prototype.call = function(methodName, var_args) {
+    try {
+        var flash = this.getFlash(),
+            args = Array.prototype.slice.call(arguments);
+
+        args.shift();
+        if (flash[methodName]) {
+            flash[methodName].apply(flash, args);
+        }
+    } catch (e) {
+    }
+};
+
+
+
+
+baidu.setBack = function(current, oldChain) {
+    current._back_ = oldChain;
+    current.getBack = function() {
+        return this._back_;
+    }
+    return current;
+};
+
+
+
+
+
 baidu.createSingle = function (methods, type) {
     var me = new baidu.base.Class();
     baidu.isString(type) && ( me._type_ = type );
     return baidu.extend(me, methods);
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+baidu.plugin = baidu.plugin || {};
+baidu.plugin._util_ = baidu.plugin._util_ || {};
+
+baidu.plugin._util_.drag = function(selector){
+
+    var timer,
+
+        doc = baidu.dom(document),
+
+        //只对第一个值操作
+        ele = baidu.dom(selector).eq(0),
+
+        //拖拽前的offset值
+        offset = ele.offset(),
+
+        //相对宽度和高度
+        width,height,
+
+        //限定拖动范围，如果有值，则为 {top:,right:,bottom:,left:}
+        range,
+
+        //跟随鼠标移动
+        move = function(ele,x,y){
+            if(range){
+
+                //优化超速移动鼠标的情况，兼容有border的情况
+                x = Math.min(range.right - range.width, Math.max(range.left, x));
+                y = Math.min(range.bottom - range.height, Math.max(range.top, y));
+            };
+
+            //相对屏幕设置位置
+            ele.offset({'left':x,'top':y});
+
+            //对全局派发事件
+            doc.trigger('dragging');
+        },
+
+        handle = function(event){
+
+            //增加函数节流，防止事件频繁触发函数，影响性能
+            if(timer){return};
+            timer = setTimeout(function(){
+                var o = ele.offset();
+                !width && (width = event.pageX - o.left);
+                !height && (height = event.pageY - o.top);
+                move(ele,event.pageX - width,event.pageY - height);
+                timer = null;
+            },16);
+        },
+
+        //防止拖拽过程中选择上文字
+        unselect = function (e) {
+            return e.preventDefault();
+        },
+
+        onEvent = function(){
+
+            //修正拖曳过程中页面里的文字会被选中
+            doc.on('selectstart',unselect);
+            doc.on('mousemove',handle);
+
+            //设置鼠标粘滞
+            if (ele[0].setCapture) {
+                ele[0].setCapture();
+            } else if (window.captureEvents) {
+                window.captureEvents(Event.MOUSEMOVE|Event.MOUSEUP);
+            };
+
+            //清除鼠标已选择元素
+            if(document.selection){
+                document.selection.empty && document.selection.empty();
+            }else if(window.getSelection){
+                window.getSelection().removeAllRanges();
+            };
+        },
+
+        offEvent = function(){
+
+            //防止最后一次的触发
+            clearTimeout(timer);
+
+            //解除鼠标粘滞
+            if (ele[0].releaseCapture) {
+                ele[0].releaseCapture();
+            } else if (window.releaseEvents) {
+                window.releaseEvents(Event.MOUSEMOVE|Event.MOUSEUP);
+            };
+            doc.off('mousemove',handle);
+            doc.off('selectstart',unselect);
+        };
+
+    doc.trigger('dragstart',{target:ele});
+    onEvent();
+
+    return {
+        target:ele,
+        disable:function(){
+            offEvent();
+            width = height = null;
+            doc.trigger('dragend');
+            return this;
+        },
+        enable:function(){
+            doc.trigger('dragstart');
+            onEvent();
+            return this;
+        },
+        range:function(value){
+            if(value === undefined){
+                return range;
+            };
+            var uRange = value, el;
+            if(baidu.type(value) !== 'object'){
+                el = baidu.dom(value).eq(0);
+                uRange = el.offset();
+                uRange.right = uRange.left + el.outerWidth();
+                uRange.bottom = uRange.top + el.outerHeight();
+            };
+            range = baidu.extend({
+                left: Number.MIN_VALUE,
+                top: Number.MIN_VALUE,
+                right: Number.MAX_VALUE,
+                bottom: Number.MAX_VALUE,
+                width: ele.outerWidth(),
+                height: ele.outerHeight()
+            }, uRange);
+            return this;
+        },
+
+        //取消上一次拖拽
+        cancel:function(){
+            ele.offset(offset);
+            return this;
+        },
+
+        //析构函数
+        dispose:function(){
+            offEvent();
+            width = height = doc = ele = offset = range = null;
+            for(var k in this){
+                delete this[k];
+            };
+            this.dispose = true;
+            return null;
+        }
+    }
+};
+
+
+
+
+
+baidu.dom.extend({
+    isCrash : function(selector,strict){
+        if(!arguments.length){ 
+            return false; 
+        };
+
+        //传入的元素，get first
+        var me = this,
+            ele = baidu.dom(selector).eq(0),
+            o = ele.offset(),
+            w = ele.outerWidth(),
+            h = ele.outerHeight(),
+            num = me.size(),
+
+            //检测算子，传入四个值比较，strict（是否严格）
+            check = function(top,right,bottom,left,strict){
+                if(strict){
+
+                    //严格模式，一定要在容器内
+                    if((o.top>=top)&&((o.top+h)<=bottom)&&(o.left>=left)&&((o.left+w)<=right)){
+                        return true;
+                    };
+
+                }else{
+
+                    //非严格模式，有碰撞或交集即可
+                    if(((o.top+h)>=top)&&(o.top<=bottom)&&((o.left+w)>=left)&&(o.left<=right)){
+                        return true;
+                    };
+                };
+            };
+
+        for(var i = 0; i < num; i++ ){
+            var _ele = me.eq(i),
+                _o = _ele.offset(),
+                _w = _ele.eq(i).outerWidth(),
+                _h = _ele.eq(i).outerHeight();
+
+            if(check(_o.top,_o.left+_w,_o.top+_h,_o.left,strict)){
+                return true;
+            };
+        };
+
+        return false;
+    }
+});
+
+// //检测两区域是否碰撞
+// check(a1,a2){
+//     if(a1.top>a2.bottom||a1.bottom<a2.top||a1.left>a2.right||a1.right<a2.left){
+//         return false;
+//     }else{
+//         return true;
+//     };
+// };
+
+baidu.dom.extend({
+    draggable:function(value,opts){
+
+        var me = this,
+
+            //存放drag实例，drag.target是当前的拖拽元素
+            drag,
+
+            //存放当前拖拽元素
+            dragEle,
+
+            //drag enter的元素列表，在drag leave中会监测
+            dragEnter = {},
+
+            //最初的位置
+            _offset,
+
+            //关注的元素
+            focusEle,
+
+            //初始化设置的值，挂在在实例上
+            funs = {
+
+                //默认参数及初始值
+                options:{
+                    enable:true 
+                    // range:undefined,
+                    // endOf:undefined,
+                    // zIndex:undefined,
+                    // focus:undefined,
+
+                    // //事件相关
+                    // onstart:undefined,
+                    // onend:undefined,
+                    // onenter:undefined,
+                    // onleave:undefined,
+                    // ondragging:undefined
+                },
+
+                //可拖拽的范围，传入Object要符合{'top':123,'right':123,'bottom':123,'left':123}
+                range:function(value){
+                    switch(arguments.length){
+                        
+                        //不传参，get方法
+                        case 0:
+                            return opt.range;
+                        break;
+
+                        //传一个参数
+                        case 1:
+
+                            //value是selector
+                            opt.range = value;
+                        break;
+                    };
+                    return draggable;
+                },
+
+                //最终要拖拽到
+                endOf:function(value){
+                    switch(arguments.length){
+                        
+                        //不传参，get方法
+                        case 0:
+
+                            //内部endOf方法。
+                            if(baidu.type(opt.endOf)=='object'){
+
+                                //endOf的范围是Object,{'top':123,'right':123,'bottom':123,'left':123}
+                                if(!dragEle.w){
+                                    dragEle.w = dragEle.outerWidth();
+                                    dragEle.h = dragEle.outerHeight();
+                                };
+                                var o = dragEle.offset(),
+                                    eo = opt.endOf;
+                               
+                                if( o.left >= eo.left && o.left + dragEle.w <= eo.right && o.top >= eo.top && o.top + dragEle.h <= eo.bottom){
+                                }else{
+                                    draggable.cancel();
+                                };
+                            }else{
+
+                                //endOf的范围是selector
+                                if(!baidu.dom(opt.endOf).isCrash(drag.target,true)){
+                                    draggable.cancel();
+                                };                                
+                            };
+                            return opt.endOf;
+                        //break;
+
+                        //传一个参数
+                        case 1:
+
+                            //value是selector或者是object;
+                            opt.endOf = value;
+                        break;
+                    };
+                    return draggable;
+                },
+
+                //获取当前正在被拖拽的元素，或者上一次被拖拽的元素
+                item:function(){
+                    return dragEle;
+                },
+
+                //显示层级
+                zIndex:function(value){
+                    if(typeof value != 'undefined'){
+                        opt.zIndex = value;
+                        me.css('z-index',value);
+                        return draggable;
+                    }else{
+                        return opt.zIndex;
+                    };
+                },
+
+                //重置方法，恢复到最初
+                reset:function(){
+                    if(drag){
+                        dragEle.offset(_offset);
+                    };
+                    return draggable;
+                },
+
+                //取消拖拽，回到上一次
+                cancel:function(){
+                    if(drag){
+                        drag.cancel();
+                    };
+                    return draggable;
+                },
+
+                //关闭拖拽
+                disable:function(){
+                    if(opt.enable){
+                        opt.enable = false;
+                        if(value && baidu.type(value)!='object'){
+                            me.find(value).css('cursor','default');
+                        }else{
+                            me.css('cursor','default');
+                        };
+                    };
+                    return draggable;
+                },
+
+                //开启拖拽
+                enable:function(){
+                    if(!opt.enable){
+                        opt.enable = true;
+                        if(value && baidu.type(value)!='object'){
+                            me.find(value).css('cursor','move');
+                        }else{
+                            me.css('cursor','move');
+                        };
+                    };
+                    return draggable;
+                },
+
+                //析构函数
+                dispose:function(){
+                    draggable.disable();
+                    if(drag && drag.dispose != true){
+                        drag.dispose();
+                    };
+
+                    //此处删除所有事件，如果用户有其他事件可能会一起删除。
+                    //TODO：后续修改下。
+                    me.off('mousedown');
+                    drag = dragEle = focusEle = doc = opt = null;
+                    for(var k in draggable){
+                        delete draggable[k];
+                    };
+                    draggable.dispose = true;
+                    return null;
+                }
+            },
+            doc = baidu.dom(document),
+
+            //当前的draggable实例，自动挂载getBack方法，直接返回之前的链头
+            draggable = baidu.setBack(baidu.createSingle(funs),me),
+
+            opt = draggable.options,
+
+            //拖拽执行（主逻辑），mousedown时触发
+            handle = function(e){
+                //拖拽是否可用
+                //表单不可拖拽，原因是如果父元素可拖拽，子元素是表单元素，在mousedown的情况下改变父元素的position值，在ff和ie下会导致子元素永远取不到焦点，无法在表单中输入内容
+                if(~'input|textarea|select|option'.indexOf(e.target.tagName.toLowerCase())
+                    || !opt.enable){
+                    return;
+                }
+                //实例一个drag
+                drag && drag.dispose();
+                drag = baidu.plugin._util_.drag(e.currentTarget);
+                dragEle = drag.target;
+                dragEle.addClass('tang-draggable-dragging');
+                draggable.fire('start',{target:dragEle,pageX:e.pageX,pageY:e.pageY});
+                if(!_offset){
+                    _offset = dragEle.offset();
+                };
+
+                //限制了范围
+                if(opt.range){
+                    drag.range(opt.range);
+                };
+
+                //是否有层级设置
+                if(opt.zIndex){
+                    draggable.zIndex(opt.zIndex);
+                };
+                                
+                doc.on('mouseup',endHandle);
+                doc.on('dragging',ingHandle);
+            },
+
+            //拖拽停止
+            endHandle = function(e){
+
+                //是否到达拖拽目的地
+                if(opt.endOf){
+                    draggable.endOf();
+                };
+                dragEle.removeClass('tang-draggable-dragging');
+                drag.disable();
+                draggable.fire('end');
+                doc.off('mouseup',endHandle);
+                doc.off('dragging',ingHandle);
+            },
+
+            //拖拽中
+            ingHandle = function(e){
+                draggable.fire('dragging');
+                enterAndLeave();
+            },
+
+            //初始化事件相关绑定
+            bindEvent = function(){
+                var evts = ['start','end','dragging','enter','leave'];
+                for(var i = 0;i<evts.length; i++){
+                    if( opt[ 'on'+evts[i] ] ){
+                        draggable.on( evts[ i ] ,opt[ 'on'+evts[i] ] );
+                    };
+                };
+            },
+
+            //根据第二个selector，设置拖拽激活区，只对该区域监听mousedown事件
+            setItem = function(){
+                me.find(value).css('cursor','move');
+                me.on('mousedown',function(e){
+                    if(baidu.dom(e.currentTarget).contains(e.target)){
+                        handle(e);
+                    };
+                });
+            },
+
+            //当用户传入options时，处理逻辑
+            setOpt = function(opts){
+                for(var k in opts){
+                    opt[k] = opts[k];
+                };
+                if(opt.focus){
+
+                    //要去掉自己本身
+                    focusEle = baidu.dom(opt.focus).not(me);
+                };
+                if(opt.zIndex){
+                    draggable.zIndex(opt.zIndex);
+                };
+                if(opt.enable == false){
+                    opt.enable = true;
+                    draggable.disable();
+                };
+                bindEvent();   
+            },
+
+            //实现draggable中的'enter'和‘leave’事件
+            enterAndLeave = function(){
+                if( opt.focus  && (opt.onenter||opt.onleave) ){
+
+                    //存储当前enter的元素
+                    var _dragEnter = {};
+
+                    for(var i = 0,num = focusEle.size(); i < num; i++){
+                        
+                        var _e = focusEle.eq(i),
+                            id = baidu.id(_e.get(0));
+
+                        if( _e.isCrash(dragEle) ){
+
+                            //观察对象的改变来触发
+                            if(!dragEnter[id]){
+                                dragEnter[id] = _e.get(0);
+                                draggable.fire('enter',{'target':dragEnter[id]});
+                            };
+                            _dragEnter[id] = _e.get(0);
+                        };
+
+                    };
+
+                    //判断是否触发leave事件
+                    for(var k in dragEnter){
+                        if(dragEnter[k] && !_dragEnter[k]){
+                            draggable.fire('leave',{'target':dragEnter[k]});
+                            dragEnter[k] = null;
+                        };
+                    };
+                };
+            };
+
+        //函数参数逻辑
+        switch(arguments.length){
+
+            //没有传参，默认执行
+            case 0:
+                me.css('cursor','move').on('mousedown',handle);
+            break;
+
+            //传入一个参数
+            case 1:
+                if( baidu.type(value) == 'object' ){
+
+                    //value是options
+                    me.css('cursor','move').on('mousedown',handle);
+                    setOpt(value);
+                }else{
+                
+                    //value是selector
+                    setItem();
+                }
+            break;
+
+            //传入selector和options
+            case 2:
+
+                //value是selector
+                setItem();
+                setOpt(opts);
+            break;
+        };
+
+        //暴露getBack()方法，返回上一级TangramDom链头
+        return draggable;
+    }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+baidu.plugin._util_.rubberSelect = function(options){
+    var doc = baidu.dom(document),
+        opts = options || {},
+
+        //限制可触发的范围,selector或者是Object，来自options.range
+        range,
+
+        //监测点击是否在限制区内，在为true
+        rangeFlag,
+
+        //TODO：以后可以考虑支持enter和leave事件
+        //关注的元素，来自options.focus
+        //focus,
+
+        //遮罩层虚线，具体样式在CSS中设置
+        mask,
+
+        //第一次mousedown时的鼠标位置
+        x1,y1,
+        x2,y2,
+        _x2,_y2,
+
+        //函数节流计时器
+        timer,
+
+        //延时0.15秒计时器
+        delayTimer,
+
+        handle = function(e){
+            clearTimeout(delayTimer);
+            x1 = e.pageX;
+            y1 = e.pageY;
+
+            //监测范围
+            if(range){
+
+                //不在限制范围内
+                if(x1<range.left||x1>range.right||y1<range.top||y1>range.bottom){
+                    rangeFlag = false;
+                    return;
+                };
+            };
+
+            rangeFlag = true;            
+            doc.trigger('rubberselectstart');
+
+            //为了兼容快速点击的情况
+            doc.trigger('rubberselecting');
+
+            //防止其他实例将mask清除了。
+            setMask();
+            mask.width(0).height(0).show().offset({left:x1,top:y1});
+
+            doc.on('mousemove',ingHandle);
+            
+            //修正拖曳过程中页面里的文字会被选中
+            doc.on('selectstart',unselect);
+
+            //设置鼠标粘滞
+            if (mask.setCapture) {
+                mask.setCapture();
+            } else if (window.captureEvents) {
+                window.captureEvents(Event.MOUSEMOVE|Event.MOUSEUP);
+            };
+
+            //清除鼠标已选择元素
+            if(document.selection){
+                document.selection.empty && document.selection.empty();
+            }else if(window.getSelection){
+                window.getSelection().removeAllRanges();
+            };      
+        },
+
+        ingHandle = function(e){
+
+            //增加函数节流，防止事件频繁触发函数，影响性能
+            clearTimeout(timer);
+            timer = setTimeout(function(){
+                doc.trigger('rubberselecting');
+                _x2 = e.pageX;
+                _y2 = e.pageY;
+
+                //监测范围
+                if(range){
+
+                    //不在限制范围内
+                    if(_x2<range.left){
+                        x2 = range.left;
+                    }else if(_x2>range.right){
+                        x2 = range.right;
+                    }else{
+                        x2 = _x2;
+                    };
+                    if(_y2<range.top){
+                        y2 = range.top;
+                    }else if(_y2>range.bottom){
+                        y2 = range.bottom;
+                    }else{
+                        y2 = _y2;
+                    };
+                }else{
+                    x2 = _x2;
+                    y2 = _y2;
+                };
+
+                //橡皮筋移动算子
+                //TODO： 此处的width和height应该减去border的宽度
+                if(x2>x1&&y2>y1){
+                    mask.width(x2-x1).height(y2-y1);
+                }else if(x2>x1&&y1>y2){
+                    mask.width(x2-x1).height(y1-y2).offset({left:x1,top:y2});
+                }else if(x1>x2&&y1<y2){
+                    mask.width(x1-x2).height(y2-y1).offset({left:x2,top:y1});
+                }else if(x1>x2&&y1>y2){
+                    mask.width(x1-x2).height(y1-y2).offset({left:x2,top:y2});
+                };
+
+            //这里是因为我喜欢3这个数字，所以用3毫秒。    
+            },3);
+        },
+
+        endHandle = function(){
+            if(rangeFlag){
+
+                doc.off('selectstart',unselect);    
+                doc.off('mousemove',ingHandle);
+
+                //解除鼠标粘滞
+                if (mask.releaseCapture) {
+                    mask.releaseCapture();
+                } else if (window.releaseEvents) {
+                    window.releaseEvents(Event.MOUSEMOVE|Event.MOUSEUP);
+                };
+                clearTimeout(delayTimer);
+                delayTimer = setTimeout(function(){
+                    baidu.dom(document).trigger('rubberselectend');
+                    baidu.dom('.tang-rubberSelect').hide();
+
+                //用户选择阶段延时0.15秒取消，使用户可以续选，雅虎交互原则。    
+                },150);
+            };
+        },
+
+        //防止拖拽过程中选择上文字
+        unselect = function (e) {
+            return e.preventDefault();
+        },
+
+        setRange = function(){
+            if(opts.range){
+                if(baidu.type(opts.range)=='object'){
+                    range = opts.range;
+                }else{
+
+                    //传入的是selector
+                    var _ele = baidu.dom(opts.range).eq(0);
+                    range = _ele.offset();
+                    range.bottom = range.top + _ele.outerHeight();
+                    range.right = range.left + _ele.outerWidth();
+                };
+            };
+        },
+
+        setMask = function(){
+            mask = baidu.dom('.tang-rubberSelect');
+            if(!mask.size()){
+                mask = baidu.dom('<div class="tang-rubberSelect" style="position:absolute;">');
+            };
+            mask.hide().appendTo(document.body);
+        };
+
+    //函数主逻辑开始
+    setRange();
+    setMask();
+    doc.on('mousedown',handle);
+    doc.on('mouseup',endHandle);
+
+    return{
+        target:mask,
+
+        //设置范围
+        range :function(value){
+            if(!value){
+                return opts.range;
+            }else{
+                opts.range = value;
+                setRange();
+                return this;
+            };
+        },
+
+        //析构函数
+        dispose:function(){
+            
+            doc.off('mousedown',handle);
+            //doc.off('mousemove',ingHandle);
+            doc.off('mouseup',endHandle);
+
+            //因为其他实例中可能会用到，所以不做清除。
+            //mask.remove();
+            
+            doc = timer = null;
+            for(var k in this){
+                delete this[k];
+            };
+            this.dispose = true;
+            return null;
+        }
+    }
+};
+
+baidu.dom.extend({
+    selectable:function(value,opts){
+
+        var me = this,
+
+            //初始化设置的值，挂载在实例上
+            funs = {
+
+                //默认参数及初始值
+                options:{
+
+                    //是否可用
+                    enable:true,
+
+                    //通过按下ctrl或者command间隔选择
+                    intervalSelect:true
+                    
+                    //可以激活选择功能的范围 
+                    // range:undefined,
+
+                    //事件相关
+                    // onstart:undefined,
+                    // onend:undefined,
+                    // ondragging:undefined,
+
+                    //选择元素改变时触发，增加和减少都会触发
+                    // onchange:undefined
+                },
+
+                //激活选择的范围，传入selector或者Object要符合{'top':123,'right':123,'bottom':123,'left':123}
+                range:function(value){
+                    if(value && rubberSelect && rubberSelect.dispose != true){
+                        opt.range = value;
+                        rubberSelect.range(value);
+                        return selectable;
+                    }else{
+                        return opt.range;
+                    };
+                },
+
+                //取消选择，恢复上次选择的结果
+                cancel:function(){
+                    if(lastSelected){
+                        item.removeClass('tang-selectable-selected');
+                        lastSelected.addClass('tang-selectable-selected');
+                    }else{
+                        selectable.reset();
+                    }
+                    return selectable;
+                },
+
+                //取消选择，恢复为一个都没选
+                reset:function(){
+                    lastSelected = me.find('.tang-selectable-selected');
+                    item.removeClass('tang-selectable-selected');
+                    return selectable;
+                },
+                
+                //关闭选择功能
+                disable:function(){
+                    opt.enable = false;
+                    if(rubberSelect && rubberSelect.dispose != true){
+                        rubberSelect.dispose();
+                        offDocEvent();
+                    };
+                    return selectable;
+                },
+
+                //开启选择功能
+                enable:function(){
+                    if(!opt.enable){
+                        opt.enable = true;
+                        if(rubberSelect && rubberSelect.dispose == true){
+                            rubberSelect = baidu.plugin._util_.rubberSelect();
+                        };
+                        bindDocEvent();
+                    };
+                    return selectable;
+                },
+
+                //析构函数
+                dispose:function(){
+                    selectable.disable();
+                    doc = rubberSelect = item = timer = null;
+                    for(var k in selectable){
+                        delete selectable[k];
+                    };
+                    selectable.dispose = true;
+                    return null;
+                },
+
+                //设置或取得当前选中的项
+                selected:function(value){
+                    if(value){
+                        me.find(value).addClass('tang-selectable-selected');
+                        return selectable;
+                    }else{
+                        return me.find('.tang-selectable-selected');
+                    };
+                },
+
+                //取得没有选中的值
+                unselected:function(value){
+                    if(value){
+                        me.find(value).removeClass('tang-selectable-selected');
+                        return selectable;
+                    }else{
+                        return item.not('.tang-selectable-selected');
+                    };
+                },
+
+                //取得当前所有元素
+                item:function(){
+                    return item;
+                },
+
+                //取得当前选择元素的编号，或通过数组设置
+                index:function(value){
+                    if(baidu.type(value)=='array'){
+                        item.removeClass('tang-selectable-selected');
+                        for(var i = 0,num = value.length;i<num;i++){
+                            item.eq(value[i]).addClass('tang-selectable-selected');
+                        };
+                        return selectable;
+                    }else{
+                        var arr = [];
+                        for(var i = 0, num = item.size();i<num;i++){
+                            if(item.eq(i).hasClass('tang-selectable-selected')){
+                                arr.push(i);
+                            };
+                        };
+                        return arr;
+                    };
+                }
+
+            },
+
+            doc = baidu.dom(document),
+
+            //当前的selectable实例，自动挂载getBack方法，直接返回之前的链头
+            selectable = baidu.setBack(baidu.createSingle(funs),me),
+
+            opt = selectable.options,
+
+            //存放rubberSelect
+            rubberSelect,
+
+            //selectable的item
+            item,
+
+            //存储上一次选择的项，cancel方法中用来还原
+            lastSelected,
+
+            //函数节流计时器
+            timer,
+
+            //按键多选的标志量，可以多选为true
+            keydownMore = false,
+
+            //初始化事件相关绑定
+            bindEvent = function(){
+                var evts = ['start','end','dragging','change'];
+                for(var i = 0,num = evts.length;i< num; i++){
+                    if( opt[ 'on'+evts[i] ] ){
+                        selectable.on( evts[ i ] ,opt[ 'on'+evts[i] ] );
+                    };
+                };
+
+                selectable.on('start',function(){
+                    lastSelected = me.find('.tang-selectable-selected');
+                });
+
+                //支持多选功能
+                selectable.on('end',function(){
+                    item.removeClass('tang-selectable-selecting');
+                });
+            },
+
+            handle = function(){
+
+                //增加函数节流，防止事件频繁触发函数，影响性能
+                clearTimeout(timer);
+                timer = setTimeout(function(){
+                    selectable.fire('dragging');
+                    if(!item){return;};
+                    if(!keydownMore){
+
+                        //只能选择一次
+                        for(var i = 0 , num = item.size(); i < num; i ++){
+                            var _ele = item.eq(i);
+                            if(_ele.isCrash(rubberSelect.target)){
+                                if (!_ele.hasClass('tang-selectable-selected')) {
+                                    selectable.fire('change',{target:_ele});
+                                    _ele.addClass('tang-selectable-selected');
+                                };
+                            }else{
+                                if(_ele.hasClass('tang-selectable-selected')){
+                                    selectable.fire('change',{target:_ele});
+                                    _ele.removeClass('tang-selectable-selected');
+                                };
+                            };
+                        };
+                    }else{
+
+                        //按下了ctrl 或 command 键，可以多次选择
+                        for(var i = 0 , num = item.size(); i < num; i ++){
+                            var _ele = item.eq(i);
+
+                            //只对选了的做判断
+                            if(_ele.isCrash(rubberSelect.target) && !_ele.hasClass('tang-selectable-selecting')){
+                                selectable.fire('change',{target:_ele});
+
+                                //支持可以多次选择，判断此次碰撞是否已经选择了
+                                _ele.addClass('tang-selectable-selecting');                              
+                                if (!_ele.hasClass('tang-selectable-selected')) {
+                                    _ele.addClass('tang-selectable-selected');
+                                }else{
+                                    _ele.removeClass('tang-selectable-selected');
+                                };
+                            };
+                        };
+                    };
+
+                },3);
+            },
+
+            keyDownHandle = function(e){
+                    
+                //Win下Ctrl 和 Mac下 command 键
+                if(e.ctrlKey || e.keyCode == 91){
+                    keydownMore = true;
+                };
+            },
+
+            keyUpHandle = function(e){
+
+                //Win下Ctrl 和 Mac下 command 键
+                if(!e.ctrlKey || e.keyCode == 91){
+                    keydownMore = false;
+                    item.removeClass('tang-selectable-selecting');
+                };
+            },
+
+            fireStart = function(){
+                selectable.fire('start');
+            },
+
+            fireEnd = function(){
+                selectable.fire('end');
+            },
+
+            bindDocEvent = function(){
+                if(opt.intervalSelect){
+                    doc.on('keydown',keyDownHandle);
+                    doc.on('keyup',keyUpHandle);
+                };
+                doc.on('rubberselecting',handle);
+                doc.on('rubberselectstart',fireStart);
+                doc.on('rubberselectend',fireEnd);
+            },
+
+            //统一的解绑事件
+            offDocEvent = function(){
+                if(opt.intervalSelect){
+                    doc.off('keydown',keyDownHandle);
+                    doc.off('keyup',keyUpHandle);
+                };
+                doc.off('rubberselecting',handle);
+                doc.off('rubberselectstart',fireStart);
+                doc.off('rubberselectend',fireEnd);                    
+            },
+
+            setOpt = function(opts){
+                for(var k in opts){
+                    opt[k] = opts[k];
+                };
+                if(opt.enable == false){
+                    selectable.disable();
+                };
+                if(opt.range){
+                    selectable.range(opt.range);
+                };
+            };
+
+        //函数参数逻辑
+        rubberSelect = baidu.plugin._util_.rubberSelect();
+        switch(arguments.length){
+
+            //没有传参，默认执行
+            case 0:
+                item = me.children();
+            break;
+
+            //传入一个参数
+            case 1:
+                if(baidu.type(value) == 'object'){
+
+                    //此时value为options
+                    item = me.children();
+                    setOpt(value);
+                }else{
+
+                    //此时是selector
+                    item = me.find(value);
+                };
+
+            break;
+
+            //传入selector和options
+            case 2:
+                item = me.find(value);
+                setOpt(opts);
+            break;
+        };
+        bindEvent();
+        bindDocEvent();
+        
+        //暴露getBack()方法，返回上一级TangramDom链头
+        return selectable;
+    }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+baidu.dom.extend({
+    sortable : function(value,opts){
+
+        var me = this,
+            argsNum = arguments.length,
+
+            //每一个可以被拖拽的项
+            item,
+
+            //每个元素的相关值
+            itemAttr = [],
+
+            //当前的draggable对象
+            draggable,
+
+            //当前被拖拽的项
+            dragEle,
+
+            //当前拖拽元素的相关属性信息
+            dragEleAttr = {},
+
+            //克隆的拖拽元素
+            dragEleClone,
+            dragEleCloneAttr = {},
+
+            //当前sortable内的HTML，为了能够完美实现reset方法
+            htmlReset = '',
+
+            //每次变化后sortable内的HTML，为了能够完美实现cancel方法
+            htmlCancel = '',
+            htmlTemp = '',
+
+            //初始化设置的值，挂在在实例上
+            funs = {
+
+                //默认参数及初始值
+                options:{
+                    enable:true 
+                    // range:undefined,
+
+                    //事件相关
+                    // onstart:undefined,
+                    // onend:undefined,
+                    // ondragging:undefined,
+                    // onchange:undefined
+                },
+
+                //可拖拽的范围，传入Object要符合{'top':123,'right':123,'bottom':123,'left':123}
+                range:function(value){
+                    switch(arguments.length){
+                        
+                        //不传参，get方法
+                        case 0:
+                            return opt.range;
+                        break;
+
+                        //传一个参数
+                        case 1:
+
+                            //value是selector
+                            opt.range = value;
+                            draggable.range(value);
+                        break;
+                    };
+                    return sortable;
+                },
+
+                //取出可以被拖拽的项，顺序为新顺序
+                item:function(){
+                    return me.find('.tang-sortable-item');
+                },
+
+                //索引
+                index:function(value){
+                    if(value == 'set'){
+
+                        //set方法，内部接口
+                        for(var i = 0,num = item.size();i<num;i++){
+                            item.eq(i).data('sortable-id',i);
+                        };
+                        return sortable;
+                    }else{
+                        var index = [],
+                            _item = me.find('.tang-sortable-item');
+                        for(var i = 0,num = _item.size();i<num;i++){
+                            index.push(_item.eq(i).data('sortable-id'));
+                        };
+                        return index;
+                    };
+                },
+
+                //取消拖拽，回到上一次
+                cancel:function(){
+                    me.html(htmlCancel);
+                    init();
+                    (opt.enable == false) && sortable.disable();
+                    return sortable;
+                },
+
+                //重置拖拽
+                reset:function(){
+                    me.html(htmlReset);
+                    init();
+                    (opt.enable == false) && sortable.disable();
+                    return sortable;
+                },
+
+                //关闭拖拽
+                disable:function(){
+                    opt.enable = false;
+                    item.removeClass('tang-sortable-item');
+                    draggable.disable();
+                    return sortable;
+                },
+
+                //开启拖拽
+                enable:function(){
+                    if(!opt.enable){
+                        opt.enable = true;
+                        draggable.enable();
+                    };
+                    return sortable;
+                },
+
+                //析构函数
+                dispose:function(){
+                    sortable.disable();
+                    draggable.dispose();
+                    doc = opt = me = item = itemAttr = dragEle = dragEleAttr = dragEleClone = dragEleCloneAttr = null;
+                    for(var k in sortable){
+                        delete sortable[k];
+                    };
+                    sortable.dispose = true;
+                    return null;
+                }
+            },
+
+            doc = baidu.dom(document),
+
+            //当前的sortable实例，自动挂载getBack方法，直接返回之前的链头
+            sortable = baidu.setBack(baidu.createSingle(funs),me),
+
+            opt = sortable.options,
+
+            //初始化事件相关绑定
+            bindEvent = function(){
+                var evts = ['start','end','dragging','change'];
+                for(var i = 0;i<evts.length; i++){
+                    if( opt[ 'on'+evts[i] ] ){
+                        sortable.on( evts[ i ] ,opt[ 'on'+evts[i] ] );
+                    };
+                };
+
+                //在cancel和reset方法中，这些事件会被重绑，所以在这先清除。
+                draggable.off('start',handle);
+                draggable.off('dragging',ingHandle);
+                draggable.off('end',endHandle);
+
+                draggable.on('start',handle);
+                draggable.on('dragging',ingHandle);
+                draggable.on('end',endHandle);
+            },
+
+            getItemAttr = function(){
+                itemAttr = [];
+                for(var i = 0 , num = item.size(); i< num ; i++){
+                    var ele = item.eq(i),
+                        w = ele.outerWidth(),
+                        h = ele.outerHeight(),
+                        o = ele.offset(),
+
+                        //TODO:如果想支持非列表类型，如块类型的并排横着摆放，在此加入left和right判断。
+                        // left = {},
+                        // right = {},
+                        up = {top:o.top,bottom:o.top+h/2,left:o.left,right:o.left+w},
+                        down = {top:o.top+h/2,bottom:o.top+h,left:o.left,right:o.left+w};
+                    itemAttr.push({id:i,target:ele,up:up,down:down});
+                };
+            },
+
+            //判断是否碰撞，返回当前碰撞的方位false,up,down,both
+            checkCrash = function(area1,area2){
+                var up = isCrash(area1.up,area2),
+                    down = isCrash(area1.down,area2);
+                if(up && down){
+                    return 'both';
+                }else if(up && !down){
+                    return 'up';
+                }else if(down && !up){
+                    return 'down';
+                }else{
+                    return false;
+                };
+            },
+
+            //检测两区域是否碰撞
+            isCrash = function(a1,a2){
+                if(a1.top>a2.bottom||a1.bottom<a2.top||a1.left>a2.right||a1.right<a2.left){
+                    return false;
+                }else{
+                    return true;
+                };
+            },
+
+            handle = function(e){
+                getItemAttr();
+                dragEle = e.target;
+                dragEleAttr = {
+                    id:dragEle.data('sortable-id'),
+                    w:dragEle.outerWidth(),
+                    h:dragEle.outerHeight(),
+                    zIndex:dragEle.css('z-index')
+                };
+                sortable.fire('start');
+                htmlTemp = me.html().replace(/\stang-draggable-dragging/g,'');
+
+                //清除掉draggable附加的className
+                dragEleClone = dragEle.clone();
+
+                //TODO：以后可以考虑根据需求开放clone这个元素的样式
+                dragEleClone.addClass('tang-sortable-clone');
+                dragEleClone.removeClass('tang-draggable-dragging tang-sortable-item');
+
+                dragEle.after(dragEleClone);
+                dragEleClone.css('visibility','hidden');
+
+                //TODO:这里的z-index不应该被硬编码的，需要判断下周边的z-index来设定。
+                dragEle.css({'position':'absolute','z-index':200});
+                var o = dragEleClone.offset();
+                dragEleCloneAttr.left = o.left;
+                dragEleCloneAttr.top = o.top;
+            },
+
+            ingHandle = function(){
+
+                //这段监听的dragging，dragging已经被函数节流过了。
+                var index,position;
+                var o = dragEle.offset();
+                dragEleAttr.top = o.top;
+                dragEleAttr.left = o.left;
+                dragEleAttr.bottom = o.top + dragEleAttr.h;
+                dragEleAttr.right = o.left + dragEleAttr.w;
+                for(var i = 0 ,num = itemAttr.length;i<num;i++){
+                    if(itemAttr[i].id != dragEleAttr.id ){
+                        position = checkCrash(itemAttr[i],dragEleAttr);
+                        if(position == 'up'){
+                            itemAttr[i].target.before(dragEleClone);
+                        }else if(position == 'down'){
+                            itemAttr[i].target.after(dragEleClone);
+                        }else if(position == 'both'){
+                            //itemAttr[i].target.before(dragEleClone);
+                        }else{
+
+                        };
+                    };
+                };
+                sortable.fire('dragging');
+            },
+
+            endHandle = function(){
+                var o = dragEleClone.offset();
+                
+                //克隆的元素在原位
+                if(o.left == dragEleCloneAttr.left && o.top == dragEleCloneAttr.top){
+                }else{
+                    htmlCancel = htmlTemp;
+                    sortable.fire('change');
+                    dragEleClone.after(dragEle);
+                };
+                dragEle.css({'position':'static',left:'',top:'','z-index':dragEleAttr.zIndex});
+                dragEleClone.remove();
+                dragEleClone = null;
+                sortable.fire('end');
+            },
+
+            setOpt = function(opts){
+                for(var k in opts){
+                    opt[k] = opts[k];
+                };
+                (opt.enable == false) && sortable.disable();
+            },
+
+            //函数主逻辑
+            init = function(){
+
+                //函数参数逻辑
+                switch(argsNum){
+
+                    //没有传参，默认执行
+                    case 0:
+                        item = me.children();
+                    break;
+
+                    //传入一个参数
+                    case 1:
+                        if( baidu.type(value) == 'object' ){
+                            item = me.children();
+
+                            //value是options
+                            setOpt(value);
+                        }else{
+                        
+                            //value是selector
+                            item = me.find(value);
+                        };
+                    break;
+
+                    //传入selector和options
+                    case 2:
+
+                        //value是selector
+                        item = me.find(value);
+                        setOpt(opts);
+                    break;
+                };
+                item.addClass('tang-sortable-item');
+                draggable = baidu(item).draggable().range(opt.range);
+                sortable.index('set');
+                bindEvent();
+            };
+
+        init();
+        htmlReset = htmlCancel = me.html();
+
+        //暴露getBack()方法，返回上一级TangramDom链头
+        return sortable;
+    }
+});
+
+
+
+
+
+ 
+ 
+ 
+
+(function( undefined ){
+    var data = baidu.dom.data,
+
+        //baidu._util_.access中value不能是fn,所以这里重写一个
+        wrapper = function(tang, value, fn, setter){
+            var tmp;
+
+            if( !tang.size() ) {
+                return tang;
+            }
+//            return setter || value ? ( tang.each(fn), tang ): fn.call( tmp = tang[0], 0, tmp );
+            return setter || value ? tang.each(fn) : fn.call( tmp = tang[0], 0, tmp );
+        };
+
+    baidu._queueHooks = function(elem, type){
+        var key = type + "queueHooks",
+            ret;
+
+        return data(elem, key) || (data(elem, key, ret = {
+            empty: baidu.Callbacks("once memory").add(function(){
+                //清理
+                data(elem, type + "queue", null);
+                data(elem, key, null);
+            })
+        }), ret);
+    }
+
+
+    baidu.plugin( "dom", {
+        queue: function( type, value, dontstart ){
+            var key;
+
+            if ( typeof type !== "string" ) {
+                value = type;
+                type = undefined;
+            }
+
+            type = type || "fx";
+            key = type + "queue";
+
+            return wrapper(this, value, function(){
+                var queue = data(this, key);
+                if(value){
+                    if(!queue || baidu.isArray(value)){
+                        data( this, key, queue = baidu.makeArray( value ) );
+                    } else {
+                        queue.push( value );
+                    }
+
+                    // 确保queue有hooks, 在promise调用之前必须要有hooks
+                    baidu._queueHooks( this, type );
+
+                    if ( !dontstart && type === "fx" && queue[0] !== "inprogress" ) {
+                        baidu.dequeue( this, type );
+                    }
+                }
+                return queue || [];
+            }, arguments.length > 1 || value);
+        },
+
+        dequeue: function( type ){
+            type = type || "fx";
+
+            return wrapper(this, true, function(){
+                var elem = this,
+                    queue = baidu.queue(elem, type),
+                    remaining = queue.length,
+                    fn = queue.shift(),
+                    hooks = baidu._queueHooks(elem, type),
+                    next = function(){
+                        baidu.dequeue(elem, type);
+                    };
+
+                if( fn === "inprogress" ) {
+                    fn = queue.shift();
+                    remaining--;
+                }
+
+                hooks.cur = fn;
+
+                if( fn ) {
+                    if( type === "fx" ) {
+                        queue.unshift("inprogress");
+                    }
+
+                    delete hooks.stop;
+                    fn.call(elem, next, hooks);
+                }
+
+                !remaining && hooks && hooks.empty.fire();
+            });
+        }
+    });
+
+    //copy queue and dequeue to baidu namespace.
+    baidu.queue = baidu.dom.queue;
+    baidu.dequeue = baidu.dom.dequeue;
+
+})();
+
+
+ 
+baidu.plugin( "dom", {
+
+    clearQueue: function( type ) {
+        return this.queue( type || "fx", [] );
+    }
+});
+
+
+baidu.plugin( "dom", {
+
+    delay: function( duration, type ){
+        type = type || "fx";
+        return this.queue(type, function( next, hooks ){
+            var timer = setTimeout(next, duration || 0);
+            hooks.stop = function(){
+                clearTimeout( timer );
+            }
+        });
+    }
+});
+
+
+
+
+
+
+baidu.fx = baidu.fx || {};
+
+
+
+
+(function( undefined ){
+    var fx = baidu.fx,
+
+        //当animation frame不支持时有用
+        interval = 13,
+
+        //方法池子
+        timers = [],
+
+        getStrategy = (function(){
+            var strategies = {
+                    _default: {
+                        next: function( cb ){
+                            return setTimeout( cb, interval );
+                        },
+
+                        cancel: function( id ){ //不包一层，在id里面报错
+                            return clearTimeout( id );
+                        }
+                    }
+                },
+
+                nextFrame = window.requestAnimationFrame ||
+                    window.webkitRequestAnimationFrame ||
+                    window.mozRequestAnimationFrame ||
+                    window.oRequestAnimationFrame ||
+                    window.msRequestAnimationFrame,
+
+                cancelFrame = window.cancelRequestAnimationFrame ||
+                    window.webkitCancelAnimationFrame ||
+                    window.webkitCancelRequestAnimationFrame ||
+                    window.mozCancelRequestAnimationFrame ||
+                    window.oCancelRequestAnimationFrame ||
+                    window.msCancelRequestAnimationFrame;
+
+            nextFrame && cancelFrame && (strategies.frame = {
+                next: nextFrame,
+                cancel: cancelFrame
+            });
+
+            return function( stra ){
+                return strategies[stra] || strategies._default;
+            };
+        })(),
+
+        now = function(){
+            return ( new Date() ).getTime();
+        },
+
+        createFxNow = function(){
+            setTimeout(function(){
+                fxNow = undefined;
+            }, 0);
+            return fxNow = now();
+        },
+
+        //统一调配
+        tick = function(){
+            var timer,
+                i = 0;
+
+            fxNow = now();//cache 当前时间
+            for ( ; i < timers.length; i++ ) {
+                timer = timers[ i ];
+                // Checks the timer has not already been removed
+                if ( !timer() && timers[ i ] === timer ) {
+                    timers.splice( i--, 1 );
+                }
+            }
+            if ( !timers.length ) {
+                stop();
+            } else {
+                start( true );
+            }
+            fxNow = undefined;
+        },
+
+        //开始定期执行
+        start = function( force ){
+
+            //暴露到fx给测试用例用
+            strategy = strategy || ( fx.strategy = getStrategy( fx.useAnimationFrame ? 'frame' : '_default' ) );
+
+            timerId = ( force ? false : timerId ) || strategy.next.call( null, tick );//必须使用call，否则会报错
+        },
+
+        //结束定期执行
+        stop = function(){
+            strategy && strategy.cancel.call( null, timerId );//必须使用call，否则会报错
+            timerId = strategy = null;
+        },
+
+        //timer ID
+        timerId,
+        fxNow,
+        strategy;
+
+
+    baidu.extend(fx, {
+
+        //添加方法到池子，如果fn有返回值，此方法将在下个tick再次执行。
+        //获取池子
+        timer: function( fn ){
+            if( fn === undefined ){
+                return timers;
+            }
+            fn() && timers.push( fn ) && start();
+        },
+
+        //获取当前时间，有缓存机制
+        now: function(){
+            return fxNow || createFxNow();
+        },
+
+        tick: tick,
+
+        useAnimationFrame: true
+    });
+})();
+
+
+
+
+
+
+
+
+
+void function () {
+    var css = baidu.dom.css,
+        cssNumber = baidu._util_.cssNumber;
+
+    baidu.extend(baidu.plugin._util_.fx = {}, {
+        cssUnit: function (prop) {
+            return cssNumber[prop] ? "" : "px";
+        },
+
+        getCss: function (elem, key) {
+            var val = css(elem, key),
+                num = parseFloat(val);
+
+            return !isNaN(num) && isFinite(num) ? num || 0 : val;
+        },
+
+        propExpand: (function () {
+            var hooks = {},
+                cssExpand = [ "Top", "Right", "Bottom", "Left" ];
+
+            baidu.forEach({
+                margin: "",
+                padding: "",
+                border: "Width"
+            }, function (suffix, prefix) {
+                hooks[ prefix + suffix ] = {
+                    expand: function (value) {
+                        var i = 0,
+                            expanded = {},
+
+                        // assumes a single number if not a string
+                            parts = typeof value === "string" ? value.split(" ") : [ value ];
+
+                        for (; i < 4; i++) {
+                            expanded[ prefix + cssExpand[ i ] + suffix ] =
+                                parts[ i ] || parts[ i - 2 ] || parts[ 0 ];
+                        }
+
+                        return expanded;
+                    }
+                };
+            });
+
+            return function (prop, value) {
+                var hook = hooks[ prop ];
+                return hook ? hook.expand(value) : null;
+            }
+        })(),
+
+        getAllData: (function () {
+            var guid = baidu.key
+                , maps = baidu.global("_maps_HTMLElementData");
+
+            return function (elem) {
+                var key = elem[guid];
+                return key && maps[key] || [];
+            }
+        })()
+    });
+
+
+}();
+
+
+
+
+(function( undefined ){
+
+    var fx  = baidu.fx,
+        helper = baidu.plugin._util_.fx,
+        css = baidu.dom.css,
+        cssUnit = helper.cssUnit,
+        cssHooks = baidu._util_.cssHooks,
+        getCss = helper.getCss,
+        easing = {
+            linear: function( p ) {
+                return p;
+            },
+            swing: function( p ) {
+                return 0.5 - Math.cos( p*Math.PI ) / 2;
+            }
+        };
+
+    function Tween( elem, options, prop, end, easing ) {
+        return new Tween.prototype.init( elem, options, prop, end, easing );
+    }
+
+    Tween.prototype = {
+        constructor: Tween,
+        init: function( elem, options, prop, end, easing, unit ) {
+            this.elem = elem;
+            this.prop = prop;
+            this.easing = easing || "swing";
+            this.options = options;
+            this.start = this.now = this.cur();
+            this.end = end;
+            this.unit = unit || cssUnit(prop);
+        },
+        cur: function() {
+            var hooks = Tween.propHooks[ this.prop ];
+
+            return hooks && hooks.get ?
+                hooks.get( this ) :
+                Tween.propHooks._default.get( this );
+        },
+        run: function( percent ) {
+            var eased,
+                hooks = Tween.propHooks[ this.prop ];
+
+            if ( this.options.duration ) {
+                this.pos = eased = easing[ this.easing ](
+                    percent, this.options.duration * percent, 0, 1, this.options.duration
+                );
+            } else {
+                this.pos = eased = percent;
+            }
+            this.now = ( this.end - this.start ) * eased + this.start;
+
+            if ( this.options.step ) {
+                this.options.step.call( this.elem, this.now, this );
+            }
+
+            if ( hooks && hooks.set ) {
+                hooks.set( this );
+            } else {
+                Tween.propHooks._default.set( this );
+            }
+            return this;
+        }
+    };
+
+    Tween.prototype.init.prototype = Tween.prototype;
+
+    Tween.propHooks = {
+        _default: {
+            get: function( tween ) {
+                var result,
+                    elem = tween.elem,
+                    style;
+
+                if ( elem[ tween.prop ] != null &&
+                    (!( style = elem.style ) || style[ tween.prop ] == null) ) {
+                    return elem[ tween.prop ];
+                }
+                result = getCss( elem, tween.prop );
+                return !result || result === "auto" ? 0 : result;
+            },
+
+            set: function( tween ) {
+                var elem = tween.elem,
+                    style = elem.style;
+
+                if ( style && ( style[ tween.prop ] != null || cssHooks[tween.prop] ) ) {
+                    css( elem, tween.prop, tween.now + tween.unit );
+                } else {
+                    elem[ tween.prop ] = tween.now;
+                }
+            }
+        }
+    };
+
+    Tween.propHooks.scrollTop = Tween.propHooks.scrollLeft = {
+        set: function( tween ) {
+            var elem = tween.elem;
+            if ( elem.nodeType && elem.parentNode ) {
+                elem[ tween.prop ] = tween.now;
+            }
+        }
+    };
+
+
+    //expose
+    baidu.extend(fx, {
+        Tween: Tween,
+        easing: easing
+    });
+})();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+(function(support){
+    var div = document.createElement("div");
+
+    support.inlineBlockNeedsLayout = false;
+    support.shrinkWrapBlocks = false;
+
+    baidu(document).ready(function(){
+        var body = document.body,
+            container = document.createElement("div");
+        container.style.cssText = "border:0;width:0;height:0;position:absolute;top:0;left:-9999px;margin-top:1px";
+
+        body.appendChild( container ).appendChild( div );
+
+        if ( typeof div.style.zoom !== "undefined" ) {
+            div.style.cssText = "padding:0;margin:0;border:0;display:block;box-sizing:content-box;-moz-box-sizing:content-box;-webkit-box-sizing:content-box;width:1px;padding:1px;display:inline;zoom:1";
+            support.inlineBlockNeedsLayout = ( div.offsetWidth === 3 );
+
+            // Support: IE6
+            // Check if elements with layout shrink-wrap their children
+            div.style.display = "block";
+            div.innerHTML = "<div></div>";
+            div.firstChild.style.width = "5px";
+            support.shrinkWrapBlocks = ( div.offsetWidth !== 3 );
+        }
+
+        body.removeChild( container );
+        container = div = body = null;
+    });
+})(baidu._util_.support);
+
+(function( undefined ){
+
+    var fx  = baidu.fx,
+        helper = baidu.plugin._util_.fx,
+        cssUnit = helper.cssUnit,
+        css = baidu.dom.css,
+        data = baidu.dom.data,
+        isHidden = baidu._util_.isHidden,
+        getCss = helper.getCss,
+        propExpand = helper.propExpand,
+        toCamelCase = baidu.string.toCamelCase,
+        fxNow = fx.now,
+        rfxtypes = /^(?:toggle|show|hide)$/i,
+        rfxnum = /^(?:([+-])=|)([+-]?(?:\d*\.|)\d+(?:[eE][+-]?\d+|))([a-z%]*)$/i,
+        animationPrefilters = [ defaultPrefilter ],
+        tweeners = {
+            "*": [function( prop, value ) {
+                var end, unit,
+                    tween = this.createTween( prop, value ),
+                    elem = tween.elem,
+                    parts = rfxnum.exec( value ),
+                    target = tween.cur(),
+                    start = +target || 0,
+                    scale = 1,
+                    maxIterations = 20;
+
+                if ( parts ) {
+                    end = +parts[2];
+                    unit = parts[3] || cssUnit( prop );
+                    // 统一单位
+                    if ( unit !== "px" && start ) {
+                        start = getCss( elem, prop ) || end || 1;
+                        do {
+                            scale = scale || ".5";
+                            start = start / scale;
+                            css( elem, prop, start + unit );
+                        } while ( scale !== (scale = tween.cur() / target) && scale !== 1 && --maxIterations );
+                    }
+
+                    tween.unit = unit;
+                    tween.start = start;
+                    tween.end = parts[1] ? start + ( parts[1] + 1 ) * end : end;
+                }
+                return tween;
+            }]
+        };
+
+    function createTweens( animation, props ) {
+        baidu.forEach( props, function( value, prop ) {
+            var collection = ( tweeners[ prop ] || [] ).concat( tweeners[ "*" ] ),
+                index = 0,
+                length = collection.length;
+            for ( ; index < length; index++ ) {
+                if ( collection[ index ].call( animation, prop, value ) ) {
+
+                    // we're done with this property
+                    return;
+                }
+            }
+        });
+    }
+
+    function Animation( elem, properties, options ) {
+        var result,
+            stopped,
+            index = 0,
+            length = animationPrefilters.length,
+            deferred = baidu.Deferred().always( function() {
+                // don't match elem in the :animated selector
+                delete tick.elem;
+            }),
+            tick = function() {
+                if ( stopped ) {
+                    return false;
+                }
+                var currentTime = fxNow(),
+                    remaining = Math.max( 0, animation.startTime + animation.duration - currentTime ),
+                // archaic crash bug won't allow us to use 1 - ( 0.5 || 0 ) (#12497)
+                    temp = remaining / animation.duration || 0,
+                    percent = 1 - temp,
+                    index = 0,
+                    length = animation.tweens.length;
+
+                for ( ; index < length ; index++ ) {
+                    animation.tweens[ index ].run( percent );
+                }
+
+                deferred.notifyWith( elem, [ animation, percent, remaining ]);
+
+                if ( percent < 1 && length ) {
+                    return remaining;
+                } else {
+                    deferred.resolveWith( elem, [ animation ] );
+                    return false;
+                }
+            },
+            animation = deferred.promise({
+                elem: elem,
+                props: baidu.extend( {}, properties ),
+                opts: baidu.extend( true, { specialEasing: {} }, options ),
+                originalProperties: properties,
+                originalOptions: options,
+                startTime: fxNow(),
+                duration: options.duration,
+                tweens: [],
+                createTween: function( prop, end ) {
+                    var tween = fx.Tween( elem, animation.opts, prop, end,
+                        animation.opts.specialEasing[ prop ] || animation.opts.easing );
+                    animation.tweens.push( tween );
+                    return tween;
+                },
+                stop: function( gotoEnd ) {
+                    var index = 0,
+                    // if we are going to the end, we want to run all the tweens
+                    // otherwise we skip this part
+                        length = gotoEnd ? animation.tweens.length : 0;
+                    if ( stopped ) {
+                        return this;
+                    }
+                    stopped = true;
+                    for ( ; index < length ; index++ ) {
+                        animation.tweens[ index ].run( 1 );
+                    }
+
+                    deferred[ gotoEnd ? 'resolveWith' : 'rejectWith' ](elem, [ animation, gotoEnd ]);
+                    return this;
+                }
+            }),
+            props = animation.props;
+
+        propFilter( props, animation.opts.specialEasing );
+
+        for ( ; index < length ; index++ ) {
+            result = animationPrefilters[ index ].call( animation, elem, props, animation.opts );
+            if ( result ) {
+                return result;
+            }
+        }
+
+        createTweens( animation, props );
+
+        if ( baidu.isFunction( animation.opts.start ) ) {
+            animation.opts.start.call( elem, animation );
+        }
+
+        fx.timer(
+            baidu.extend( tick, {
+                elem: elem,
+                anim: animation,
+                queue: animation.opts.queue
+            })
+        );
+
+        // attach callbacks from options
+        return animation.progress( animation.opts.progress )
+            .done( animation.opts.done, animation.opts.complete )
+            .fail( animation.opts.fail )
+            .always( animation.opts.always );
+    }
+
+    //驼峰化属性名，扩展特殊属性比如padding, borderWidth...
+    function propFilter( props, specialEasing ) {
+        var value, name, index, easing, expanded;
+
+        for ( index in props ) {
+            name = toCamelCase(index);
+            easing = specialEasing[ name ];
+            value = props[ index ];
+            if ( baidu.isArray( value ) ) {
+                easing = value[ 1 ];
+                value = props[ index ] = value[ 0 ];
+            }
+
+            if ( index !== name ) {
+                props[ name ] = value;
+                delete props[ index ];
+            }
+
+            expanded = propExpand( name , value );
+            if( expanded ) {
+                value = expanded;
+                delete props[ name ];
+                for ( index in value ) {
+                    if ( !( index in props ) ) {
+                        props[ index ] = value[ index ];
+                        specialEasing[ index ] = easing;
+                    }
+                }
+            } else {
+                specialEasing[ name ] = easing;
+            }
+        }
+    }
+
+    fx.Animation = baidu.extend( Animation, {
+
+        tweener: function( props, callback ) {
+            if ( baidu.isFunction( props ) ) {
+                callback = props;
+                props = [ "*" ];
+            } else {
+                props = props.split(" ");
+            }
+
+            var prop,
+                index = 0,
+                length = props.length;
+
+            for ( ; index < length ; index++ ) {
+                prop = props[ index ];
+                tweeners[ prop ] = tweeners[ prop ] || [];
+                tweeners[ prop ].unshift( callback );
+            }
+        },
+
+        prefilter: function( callback, prepend ) {
+            if ( prepend ) {
+                animationPrefilters.unshift( callback );
+            } else {
+                animationPrefilters.push( callback );
+            }
+        }
+    });
+
+
+    function defaultPrefilter( elem, props, opts ) {
+        
+        var prop, index, length,
+            value, dataShow, toggle,
+            tween, hooks, oldfire,
+            anim = this,
+            style = elem.style,
+            orig = {},
+            handled = [],
+            hidden = elem.nodeType && isHidden( elem ),
+            support = baidu._util_.support;
+
+        // handle queue: false promises
+        if ( !opts.queue ) {
+            hooks = baidu._queueHooks( elem, "fx" );
+            if ( hooks.unqueued == null ) {
+                hooks.unqueued = 0;
+                oldfire = hooks.empty.fire;
+                hooks.empty.fire = function() {
+                    if ( !hooks.unqueued ) {
+                        oldfire();
+                    }
+                };
+            }
+            hooks.unqueued++;
+
+            anim.always(function() {
+                // doing this makes sure that the complete handler will be called
+                // before this completes
+                anim.always(function() {
+                    hooks.unqueued--;
+                    if ( !baidu.queue( elem, "fx" ).length ) {
+                        hooks.empty.fire();
+                    }
+                });
+            });
+        }
+
+        // height/width overflow pass
+        if ( elem.nodeType === 1 && ( "height" in props || "width" in props ) ) {
+            // Make sure that nothing sneaks out
+            // Record all 3 overflow attributes because IE does not
+            // change the overflow attribute when overflowX and
+            // overflowY are set to the same value
+            opts.overflow = [ style.overflow, style.overflowX, style.overflowY ];
+
+            // Set display property to inline-block for height/width
+            // animations on inline elements that are having width/height animated
+            if ( css( elem, "display" ) === "inline" &&
+                css( elem, "float" ) === "none" ) {
+
+                style.display = "inline-block";
+
+                // inline-level elements accept inline-block;
+                // block-level elements need to be inline with layout
+                if ( !support.inlineBlockNeedsLayout  ) {
+                    style.display = "inline-block";
+                } else {
+                    style.zoom = 1;
+                }
+            }
+        }
+
+
+        if ( opts.overflow ) {
+            style.overflow = "hidden";
+            if ( !support.shrinkWrapBlocks ) {
+                anim.always(function() {
+                    style.overflow = opts.overflow[ 0 ];
+                    style.overflowX = opts.overflow[ 1 ];
+                    style.overflowY = opts.overflow[ 2 ];
+                });
+            }
+        }
+        // show/hide pass
+        for ( index in props ) {
+            value = props[ index ];
+            if ( rfxtypes.exec( value ) ) {
+                delete props[ index ];
+                toggle = toggle || value === "toggle";
+                if ( value === ( hidden ? "hide" : "show" ) ) {
+                    continue;
+                }
+                handled.push( index );
+            }
+        }
+
+        length = handled.length;
+        if ( length ) {
+            dataShow = data( elem, "fxshow" );
+            dataShow || data( elem, "fxshow", dataShow = {} );
+            if ( "hidden" in dataShow ) {
+                hidden = dataShow.hidden;
+            }
+
+            // store state if its toggle - enables .stop().toggle() to "reverse"
+            if ( toggle ) {
+                dataShow.hidden = !hidden;
+            }
+            if ( hidden ) {
+                baidu.dom( elem ).show();
+            } else {
+                anim.done(function() {
+                    baidu.dom( elem ).hide();
+                });
+            }
+            anim.done(function() {
+                var prop;
+                data( elem, "fxshow", null );
+                for ( prop in orig ) {
+                    css( elem, prop, orig[ prop ] );
+                }
+            });
+            for ( index = 0 ; index < length ; index++ ) {
+                prop = handled[ index ];
+                tween = anim.createTween( prop, hidden ? dataShow[ prop ] : 0 );
+                orig[ prop ] = dataShow[ prop ] || css( elem, prop );
+
+                if ( !( prop in dataShow ) ) {
+                    dataShow[ prop ] = tween.start;
+                    if ( hidden ) {
+                        tween.end = tween.start;
+                        tween.start = prop === "width" || prop === "height" ? 1 : 0;
+                    }
+                }
+            }
+        }
+    }
+
+})();
+
+
+
+
+ 
+
+(function(){
+    var fx = baidu.fx,
+        Animation = fx.Animation,
+        data = baidu.dom.data,
+        speeds = {
+            slow: 600,
+            fast: 200,
+            // Default speed
+            _default: 400
+        };
+
+    function isEmptyObject( obj ) {
+        var name;
+        for ( name in obj ) {
+            return false;
+        }
+        return true;
+    }
+
+    function parseOpt( speed, easing, fn ) {
+        var opt = speed && typeof speed === "object" ? baidu.extend( {}, speed ) : {
+            complete: fn || !fn && easing ||
+                baidu.isFunction( speed ) && speed,
+            duration: speed,
+            easing: fn && easing || easing && !baidu.isFunction( easing ) && easing
+        };
+
+        opt.duration = fx.off ? 0 : typeof opt.duration === "number" ? opt.duration :
+            opt.duration in speeds ? speeds[ opt.duration ] : speeds._default;
+
+        // normalize opt.queue - true/undefined/null -> "fx"
+        if ( opt.queue == null || opt.queue === true ) {
+            opt.queue = "fx";
+        }
+
+        // Queueing
+        opt.old = opt.complete;
+
+        opt.complete = function() {
+            if ( baidu.isFunction( opt.old ) ) {
+                opt.old.call( this );
+            }
+
+            if ( opt.queue ) {
+                baidu.dequeue( this, opt.queue );
+            }
+        };
+
+        return opt;
+    };
+
+    baidu.plugin('dom', {
+        animate: function( prop, speed, easing, callback ) {
+            var empty = isEmptyObject( prop ),
+                opt = parseOpt( speed, easing, callback ),
+                doAnimation = function() {
+                    // Operate on a copy of prop so per-property easing won't be lost
+                    var anim = Animation( this, baidu.extend( {}, prop ), opt );
+                    doAnimation.finish = function() {
+                        anim.stop( true );
+                    };
+                    // Empty animations, or finishing resolves immediately
+                    if ( empty || data( this, "finish" ) ) {
+                        anim.stop( true );
+                    }
+                };
+            doAnimation.finish = doAnimation;
+
+            return empty || opt.queue === false ?
+                this.each( doAnimation ) :
+                this.queue( opt.queue, doAnimation );
+        }
+    });
+
+    //expose
+    baidu.extend(fx, {
+        speeds: speeds,
+        off: false
+    })
+})();
+
+
+
+
+
+
+(function(){
+    var fx = baidu.fx,
+        helper = baidu.plugin._util_.fx,
+        getAllData = helper.getAllData;
+
+
+    baidu.plugin( "dom", {
+        finish: function( type ) {
+            if ( type !== false ) {
+                type = type || "fx";
+            }
+            return this.each( function() {
+                var index,
+                    data = getAllData( this ),
+                    queue = data[ type + "queue" ],
+                    hooks = data[ type + "queueHooks" ],
+                    timers = fx.timer(),
+                    item,
+                    length = queue ? queue.length : 0;
+
+                // enable finishing flag on private data
+                data.finish = true;
+
+                // empty the queue first
+                baidu.queue( this, type, [], true );
+
+                if ( hooks && hooks.cur && hooks.cur.finish ) {
+                    hooks.cur.finish.call( this );
+                }
+
+                // look for any active animations, and finish them
+                for ( index = timers.length; index--; ) {
+                    item = timers[ index ];
+                    if ( item.elem === this && item.queue === type ) {
+                        item.anim.stop( true );
+                        timers.splice( index, 1 );
+                    }
+                }
+
+                // look for any animations in the old queue and finish them
+                for ( index = 0; index < length; index++ ) {
+                    item = queue[ index ];
+                    if ( item && item.finish ) {
+                        item.finish.call( this );
+                    }
+                }
+
+                // turn off finishing flag
+                delete data.finish;
+            } );
+        }
+    } );
+})();
+
+
+
+
+
+
+
+ 
+(function(){
+    var fx = baidu.fx,
+        helper = baidu.plugin._util_.fx,
+        rrun = /queueHooks$/,
+        getAllData = helper.getAllData;
+
+    baidu.plugin( "dom", {
+        stop: function( type, clearQueue, gotoEnd ) {
+            var stopQueue = function( hooks ) {
+                var stop = hooks.stop;
+                delete hooks.stop;
+                stop( gotoEnd );
+            };
+
+            if ( typeof type !== "string" ) {
+                gotoEnd = clearQueue;
+                clearQueue = type;
+                type = undefined;
+            }
+            if ( clearQueue && type !== false ) {
+                this.queue( type || "fx", [] );
+            }
+
+            return this.each(function() {
+                var dequeue = true,
+                    index = type != null && type + "queueHooks",
+                    timers = fx.timer(),
+                    data = getAllData( this );
+
+                if ( index ) {
+                    if ( data[ index ] && data[ index ].stop ) {
+                        stopQueue( data[ index ] );
+                    }
+                } else {
+                    for ( index in data ) {
+                        if ( data[ index ] && data[ index ].stop && rrun.test( index ) ) {
+                            stopQueue( data[ index ] );
+                        }
+                    }
+                }
+
+                for ( index = timers.length; index--; ) {
+                    if ( timers[ index ].elem === this && (type == null || timers[ index ].queue === type) ) {
+                        timers[ index ].anim.stop( gotoEnd );
+                        dequeue = false;
+                        timers.splice( index, 1 );
+                    }
+                }
+
+                // start the next in the queue if the last step wasn't forced
+                // timers currently will call their complete callbacks, which will dequeue
+                // but only if they were gotoEnd
+                if ( dequeue || !gotoEnd ) {
+                    baidu.dequeue( this, type );
+                }
+            });
+        }
+    });
+})();
+
+
+
+
+
+ 
+ 
+ 
+
+ 
+ 
+ 
+ 
+ 
+
+// Slide
+// ---------------------------------------
+
+ 
+ 
+ 
+
+ 
+ 
+ 
+ 
+ 
+(function(){
+    var isHidden = baidu._util_.isHidden,
+        cssExpand = [ "Top", "Right", "Bottom", "Left" ],
+        presets = {};
+
+    // Generate parameters to create a standard animation
+    function genFx( type, includeWidth ) {
+        var which,
+            attrs = { height: type },
+            i = 0;
+
+        // if we include width, step value is 1 to do all cssExpand values,
+        // if we don't include width, step value is 2 to skip over Left and Right
+        includeWidth = includeWidth? 1 : 0;
+        for( ; i < 4 ; i += 2 - includeWidth ) {
+            which = cssExpand[ i ];
+            attrs[ "margin" + which ] = attrs[ "padding" + which ] = type;
+        }
+
+        if ( includeWidth ) {
+            attrs.opacity = attrs.width = type;
+        }
+
+        return attrs;
+    }
+
+    // Generate shortcuts for custom animations
+    baidu.forEach({
+        slideDown: genFx("show"),
+        slideUp: genFx("hide"),
+        slideToggle: genFx("toggle"),
+        fadeIn: { opacity: "show" },
+        fadeOut: { opacity: "hide" },
+        fadeToggle: { opacity: "toggle" }
+    }, function( props, name ) {
+        presets[ name ] = function( speed, easing, callback ) {
+            return this.animate( props, speed, easing, callback );
+        };
+    });
+
+    baidu.forEach([ "toggle", "show", "hide" ], function( name, i ) {
+        var cssFn = baidu.dom.fn[ name ];
+        presets[ name ] = function( speed, easing, callback ) {
+            return speed == null || typeof speed === "boolean" ?
+                cssFn ? cssFn.apply( this, arguments ) : this :
+                this.animate( genFx( name, true ), speed, easing, callback );
+        };
+    });
+
+    presets.fadeTo = function( speed, to, easing, callback ) {
+
+        this.filter(function(){
+            return isHidden(this);
+        }).css( "opacity", 0 ).show();
+        return this.animate({ opacity: to }, speed, easing, callback );
+    }
+
+    baidu.plugin( "dom", presets );
+})();
+
+
+/// Tangram 1.x Code Start
+
+
+baidu.url = baidu.url || {};
+
+/// Tangram 1.x Code End
+
+/// Tangram 1.x Code Start
+
+
+baidu.url.escapeSymbol = function(source) {
+    
+    //TODO: 之前使用\s来匹配任意空白符
+    //发现在ie下无法匹配中文全角空格和纵向指标符\v，所以改\s为\f\r\n\t\v以及中文全角空格和英文空格
+    //但是由于ie本身不支持纵向指标符\v,故去掉对其的匹配，保证各浏览器下效果一致
+    return String(source).replace(/[#%&\+=\/\\\s\u3000\f\r\n\t]/g, function(txt){
+        txt = txt.charCodeAt();
+        return txt === 0x3000 ? '%E3%80%80' : '%' + (0x100 + txt).toString(16).substring(1).toUpperCase();
+    });
+};
+/// Tangram 1.x Code End
+
+/// Tangram 1.x Code Start
+
+
+
+baidu.ajax.form = function (form, options) {
+    options = options || {};
+    var elements    = form.elements,
+        len         = elements.length,
+        method      = form.getAttribute('method'),
+        url         = form.getAttribute('action'),
+        replacer    = options.replacer || function (value, name) {
+            return value;
+        },
+        sendOptions = {},
+        data = [],
+        i, item, itemType, itemName, itemValue, 
+        opts, oi, oLen, oItem;
+        
+    
+    function addData(name, value) {
+        data.push(name + '=' + value);
+    }
+    
+    // 复制发送参数选项对象
+    for (i in options) {
+        if (options.hasOwnProperty(i)) {
+            sendOptions[i] = options[i];
+        }
+    }
+    
+    for (i = 0; i < len; i++) {
+        item = elements[i];
+        itemName = item.name;
+        
+        // 处理：可用并包含表单name的表单项
+        if (!item.disabled && itemName) {
+            itemType = item.type;
+            itemValue = baidu.url.escapeSymbol(item.value);
+        
+            switch (itemType) {
+            // radio和checkbox被选中时，拼装queryString数据
+            case 'radio':
+            case 'checkbox':
+                if (!item.checked) {
+                    break;
+                }
+                
+            // 默认类型，拼装queryString数据
+            case 'textarea':
+            case 'text':
+            case 'password':
+            case 'hidden':
+            case 'select-one':
+                addData(itemName, replacer(itemValue, itemName));
+                break;
+                
+            // 多行选中select，拼装所有选中的数据
+            case 'select-multiple':
+                opts = item.options;
+                oLen = opts.length;
+                for (oi = 0; oi < oLen; oi++) {
+                    oItem = opts[oi];
+                    if (oItem.selected) {
+                        addData(itemName, replacer(oItem.value, itemName));
+                    }
+                }
+                break;
+            }
+        }
+    }
+    
+    // 完善发送请求的参数选项
+    sendOptions.data = data.join('&');
+    sendOptions.method = form.getAttribute('method') || 'GET';
+    
+    // 发送请求
+    return baidu.ajax.request(url, sendOptions);
+};
+/// Tangram 1.x Code End
+
+/// Tangram 1.x Code Start
+//为兼容Tangram1.x的magic增加的接口
+
+
+baidu.dom._matchNode = function (element, direction, start) {
+    element = baidu.dom.g(element);
+
+    for (var node = element[start]; node; node = node[direction]) {
+        if (node.nodeType == 1) {
+            return node;
+        }
+    }
+
+    return null;
+};
+/// Tangram 1.x Code End
+
+
+/// Tangram 1.x Code Start
+
+ 
+baidu.dom.setAttr = function (element, key, value) {
+    return baidu.dom(baidu.dom.g(element)).attr(key, value).get(0);
+};
+/// Tangram 1.x Code End
+
+/// Tangram 1.x Code Start
+
+baidu.dom.create = function(tagName, opt_attributes) {
+    var el = document.createElement(tagName),
+        attributes = opt_attributes || {};
+    for(var i in attributes){
+        baidu.dom.setAttr(el, i, attributes[i]);
+    }
+    return el;
+};
+/// Tangram 1.x Code End
+
 
 
 /// Tangram 1.x Code Start

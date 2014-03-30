@@ -102,42 +102,43 @@
 		}
 	})();
 })();
-jsAnimateJson=[
+aAnimateJson=[
 	{
-		text:[800,0],
-		img:[1000,200]
+		title:[800,0],
+		img:[1000,1000]
 	},
 	{
-		button:[800,0],
-		img:[1000,200]
+		img:[800,0],
+		title:[1000,200]
 	},
 	{
-		text:[1000,0],
+		title:[1000,0],
+		text:[500,1000],
 		img:[800,200],
-		kick:{
-			direct:'left',
-			distance:200,
-			speed:300
+		Dismantl:{
+			isBind:true,
+			bind:'click',
+			target:'kick',
+			animateObject:{
+				left:370
+			},
+			speed:800
 		}
 	},
 	{
-		text:800,
+		title:[800,0],
+		text:[800,1800],
 		img:{
-			direct:'top',
-			toTop:1000,
+			animateObject:{
+				top:'130',
+				opacity:1
+			},
 			speed:800,
-			delay:200
+			delay:1000
 		}
 	},
 	{}
 ]
-function animate(e){
-	var json=jsAnimateJson[e];
-	for(var i in json){
-		console.log();
-	}
-}
-animate(0);
 baidu.dom.ready(function(){
 	var doc = baidu.ie || baidu.firefox ? document.documentElement : document.body;
 	baidu.oIndex = 0;
@@ -156,6 +157,7 @@ baidu.dom.ready(function(){
 		curElem		    = elem;
 		elem._hFlag_    = true;
 		flag && baidu.ToScroll(index);
+		fnAnimate(index);
 	}
 
 	// 以下条件清除滚动 : 用户在点击右侧导航，或滚动鼠标时;
@@ -228,4 +230,27 @@ baidu.dom.ready(function(){
 	})();
 	menu.style.display = "block";
 	baidu.MenuMidden(menu);
+	
+	function fnAnimate(e){
+		var aJson=aAnimateJson[e];
+		var oBox=baidu('.rows').eq(e);
+		//oBox.remove();
+		for(var i in aJson){
+			//console.log(aJson[i]['animateObject']);
+			if(aJson[i]['isBind']){
+				baidu('#'+i.toString()).on(aJson[i].bind,function(e){
+					baidu('#'+aJson[i].target).stop(true,false).animate(aJson[i].animateObject,aJson[i].speed);
+				});
+			}else if(aJson[i]['animateObject']){
+				
+				oBox.find('.'+i.toString()+'_cont').delay(aJson[i].delay).animate(aJson[i].animateObject,aJson[i].speed);
+			}else{
+				//console.log(oBox.find('.'+i.toString()+'_cont'));
+				oBox.find('.'+i.toString()+'_cont').delay(aJson[i][1]).animate({
+					opacity:'+=1'
+				},aJson[i][0]);
+			}
+		}
+	}
+	//fnAnimate(3);
 });
