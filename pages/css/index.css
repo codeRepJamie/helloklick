@@ -494,7 +494,7 @@
 }
 /*app*/
 .app .gallery .slide .section{
-	width:85%;
+	width:80%;
 }
 .app .gallery .slide01{
 	background-color:#18173a;
@@ -506,7 +506,7 @@
 	background-size: cover;
 }
 .app .gallery .slide .download{
-	right:50%;
+	right:10%;
 	top:50%;
 	bottom:auto;
 	margin-top:-157px;
@@ -516,6 +516,15 @@
 }
 .app .gallery .slide01 .btn{
 	margin:70px 0;
+}
+.app  .gallery .slide01 .section .img_cont{
+width: 70%;
+height: 104%;
+position: absolute;
+left: 0%;
+top: 4%;
+background: url(../images/app/box1/app.png) no-repeat center center;
+-webkit-background-size: cover;
 }
 .app .gallery .slide02{
 	background-color:#FFF;

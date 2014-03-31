@@ -106,7 +106,6 @@ aAnimateJson=[
 	{
 		text:{
 			animateObject:{
-				right:'10%',
 				opacity:1
 			},
 			speed:800,
