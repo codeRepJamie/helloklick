@@ -46,6 +46,9 @@ a:hover{
 .hvc{
 	font-family:HelveticaLight,helvetica,sans-serif;
 }
+.ffms{
+	 font-family:"microsoft yahei", Georgia;
+}
 .f16{
 	font-size:16px;
 }
@@ -81,4 +84,14 @@ a:hover{
 	content: '\20';
 	height: 0;
 	display: block;
+}
+.btn{
+	background-color:#ac1616;
+	display:inline-block;
+	border-radius:3px;
+	color:#FFF;
+	text-align:center;
+}
+.db{
+	display:block;
 }
