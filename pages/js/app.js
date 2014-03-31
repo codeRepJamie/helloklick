@@ -104,12 +104,26 @@
 })();
 aAnimateJson=[
 	{
-		text:[800,0],
+		text:{
+			animateObject:{
+				right:'10%',
+				opacity:1
+			},
+			speed:800,
+			delay:1000
+		},
 		img:[1000,1000]
 	},
 	{
 		img:[800,0],
-		title:[1000,200]
+		title:{
+			animateObject:{
+				right:'100',
+				opacity:1
+			},
+			speed:800,
+			delay:0
+		}
 	}
 ]
 baidu.dom.ready(function(){

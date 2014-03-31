@@ -493,16 +493,20 @@
     position     : absolute;
 }
 /*app*/
+.app .gallery .slide .section{
+	width:85%;
+}
 .app .gallery .slide01{
 	background-color:#18173a;
-	background : url(../images/app/box1/bg_box1.jpg) no-repeat center center ;
+	background : url(../images/app/box1/bg_box1.jpg) no-repeat 100% center ;
+	background : url(../images/app/box1/bg_box1.jpg) no-repeat 62% center \9;
 	-webkit-background-size: cover;
 	-moz-background-size: cover;
 	-o-background-size: cover;
 	background-size: cover;
 }
 .app .gallery .slide .download{
-	right:100px;
+	right:50%;
 	top:50%;
 	bottom:auto;
 	margin-top:-157px;
@@ -516,6 +520,7 @@
 .app .gallery .slide02{
 	background-color:#FFF;
 	background : url(../images/app/box2/bg_box2.jpg) no-repeat center center ;
+	background : url(../images/app/box2/bg_box2.jpg) no-repeat bottom center\9;
 	-webkit-background-size: cover;
 	-moz-background-size: cover;
 	-o-background-size: cover;
@@ -530,6 +535,10 @@
     top          : 50%;
     margin-left  : auto;
     margin-top  : -109px;
-    right        : 150px;
+    right        : 300px;
     position     : absolute;
+}
+.app .header {
+	background:none;
+	border-bottom-color:#484d66;
 }
