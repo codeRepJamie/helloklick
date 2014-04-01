@@ -1,0 +1,240 @@
+@font-face {
+  font-family: HelveticaLight;
+  src: local("Helvetica Neue Light"),
+       url(../font/HelveticaNeueLight.ttf);
+}
+@font-face {
+  font-family: STHeiti-Medium;
+  src: local("STHeiti-Medium"),
+       url(../font/STHeiti-Medium.ttc);
+}
+.color_select li{
+	background:url(../images/sprite.png) no-repeat;
+}
+.btn:hover{
+	text-decoration:none;
+}
+.container {
+}
+
+.wrapper {
+    min-width : 1200px;
+}
+
+.wrapper .header {
+    width         : 100%;
+    border-bottom : 1px solid #ededed;
+     position      : absolute;
+	top:0;
+	left:0;
+    background    : rgba(255, 255, 255, 0.2);
+	z-index:9999;
+}
+
+.wrapper .header .navbar {
+    height : 72px;
+    margin : 0 auto;
+    width  : 1200px;
+}
+
+.wrapper .header .navbar .logo {
+    float   : left;
+    height  : 72px;
+    width   : 72px;
+    display : inline-block;
+    background : url(../images/logo.gif) center center no-repeat;
+}
+
+.wrapper .header .navbar ul {
+    float       : right;
+    line-height : 24px;
+    margin      : 24px 0px;
+}
+
+.wrapper .header .navbar ul li {
+    float : left;
+}
+
+.wrapper .header .navbar ul li a {
+    color           : #999;
+    display         : block;
+    font-size       : 16px;
+    margin          : 0 30px 0 30px;
+    text-decoration : none;
+}
+
+.wrapper .header .navbar a:hover {
+    color : #a91815;
+}
+
+.wrapper .header .navbar ul li .vline {
+    display     : block;
+    width       : 1px;
+    height      : 20px;
+    margin      : 2px 20px 2px 0px;
+    overflow    : hidden;
+    border-left : 1px solid #999999;
+}
+
+.wrapper .header .navbar ul li .button {
+    height           : 24px;
+    width            : 56px;
+    padding          : 0px;
+    line-height      : 24px;
+    color            : #ffffff;
+    text-align       : center;
+    margin           : 0px 10px;
+    background-color : #ac1617;
+}
+
+.wrapper .header .navbar ul li .button#btnsignin {
+    background-color  : #ac1617;
+}
+
+.wrapper .header .navbar ul li .button#btnsignup {
+    background-color  : #999999;
+}
+
+.wrapper .gallery {
+    clear : both;
+}
+
+.wrapper .gallery .slides {
+}
+
+.wrapper .gallery .buttons {
+    position : fixed;
+    right    : 77px;
+    top      : 50%;
+	z-index:99999;
+}
+
+.wrapper .gallery .buttons .indicator {
+    cursor     : pointer;
+    margin     : 15px 0px;
+    width      : 14px;
+    height     : 14px;
+    border-radius : 8px;
+    background : rgba(0, 0, 0, 0.4);
+}
+
+.wrapper .gallery .buttons .indicator.selected {
+    background : rgba(188, 40, 40, 0.4);
+}
+
+.wrapper .gallery .slide {
+    clear           : both;
+    background-size : cover;
+    position        : relative;
+	background-color:#fefefe;
+	overflow:hidden;
+}
+/*act*/
+
+.act .gallery .slide .section {
+    /* min-height : 600px; */
+    /* height : 600px; */
+	width:645px;
+	height:80%;
+    bottom:0;
+    left      : 50%;
+	margin-left:-322px;
+    /* padding    : 70px 0px; */
+    position   : absolute;
+	color:#444;
+	
+	/* -webkit-box-shadow: 0 4px 3px 4px rgba(15,15,15,0.1);
+	-moz-box-shadow: 0 4px 6px 4px rgba(15,15,15,0.1);
+	box-shadow: 0 4px 6px 4px rgba(15,15,15,0.1);
+	background-color:#FFF; */
+}
+.act .gallery .slide .hand{
+	background:url(../images/act/hand.jpg) no-repeat 75% 110%;
+	z-index:99;
+	height:54%;
+}
+.act .gallery .slide .title{
+	top:15%;
+	position:absolute;
+	width:100%;
+	left:0;
+}
+.act .gallery .slide .pageCont{
+	z-index:100;
+	bottom:-80%;
+}
+.act .gallery .slide .time{
+	color:#151b23;
+}
+.act .gallery .slide .red{
+	color:#ab1717;
+	margin-top:15px;
+}
+.act .page .inner{
+	width:520px;
+	margin-top:30px;
+}
+.act .page .inner h3{
+	color:#ab1717;
+	margin-bottom:15px;
+}
+.act .gallery .slide .page{
+	position:absolute;
+	left:0;
+	bottom:0px;
+	width:100%;
+	height:80%;
+	top:auto;
+	-webkit-box-shadow: 0 -1px 12px 4px rgba(15,15,15,0.09);
+	-moz-box-shadow: 0 -1px 12px 4px rgba(15,15,15,0.09);
+	box-shadow: 0 -1px 12px 4px rgba(15,15,15,0.09);
+	background-color:#FFF;
+	border:1px solid #CCC\9;
+}
+.act .page .inner .sub{
+	line-height:26px;
+	color:#888;
+}
+.act .page .lines{
+	margin:25px 0;
+	border-bottom:1px solid #f0f0f0;
+}
+.act .page .info{
+	width:390px;
+	margin:10px auto;
+}
+.act .page .info dt,.act .page .info dd{
+	float:left;
+	display:inline;	
+}
+.act .page .info dt{
+	width:80px;
+	text-align:center;
+	line-height:50px;
+}
+.act .page .info .text-input{
+	width:286px;
+}
+.act .page .info .error{
+	padding:5px 0;
+	color:#ab1717;
+}
+.act .btn{
+	width:147px;
+	height:45px;
+	line-height:45px;
+	margin:20px auto 0 auto;
+}
+.act .title .btn{
+	margin-top:80px;
+}
+.act .page .close{
+	text-indent:99999em;
+	background:url(../images/act/close.gif) no-repeat center center;
+	width:15px; 
+	height:15px;
+	position:absolute;
+	right:20px;
+	top:20px;
+	overflow:hidden;
+}

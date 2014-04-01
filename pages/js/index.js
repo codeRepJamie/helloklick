@@ -253,4 +253,6 @@ baidu.dom.ready(function(){
 		}
 	}
 	//fnAnimate(3);
+
+
 });

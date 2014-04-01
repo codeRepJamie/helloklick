@@ -1,0 +1,97 @@
+<!doctype html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>Hello Klick</title>
+        <link rel="stylesheet" href="../css/common.css" />
+        <link rel="stylesheet" href="../css/act.css" />
+
+		<!-- <script type="text/javascript" src="../tangram-1.3.9.js"></script> -->
+		<script type="text/javascript" src="../js/tangram-2.0.2.5.js"></script>
+	<link href="../css/ui-lightness/jquery-ui-1.10.4.custom.min.css" rel="stylesheet">
+	<script src="../js/jquery-1.10.2.js"></script>
+	<script src="../js/jquery-ui-1.10.4.custom.min.js"></script>
+		
+        <!-- <script type="text/javascript" src="../require.js"></script> -->
+        <!-- <script type="text/javascript">
+            require(['index'], function(Gallery) {
+                new Gallery().gotoSlide(0);
+            });
+        </script> -->
+    </head>
+    <body>
+        <div class="container">
+            <div class="act wrapper">
+                <div class="header">
+                    <div class="navbar">
+                        <span class="logo"></span>
+                        <ul>
+                            <li><a href="../home/index.html">Home</a></li>
+                            <li><a href="../app/index.html">APP</a></li>
+                            <li><a href="#">Feedback</a></li>
+                            <li><a href="#">BBS</a></li>
+                            <li><span class="vline"></span></li>
+                            <li><a class="button" id="btnsignin" href="#">Login</a></li>
+                            <li><a class="button" id="btnsignup" href="#">Sign</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="gallery" id="gallery">
+                    <ul class="slides">
+                        <li class="slide slide01 rows">
+							<div class="title">
+								<h2 class="time tac f24 ffms">103天 ，2472 小时 ，148320 分钟</h2>
+								<h1 class="tac f32 red ffms">感谢点名的你们。</h1>
+								<a id="getForm" class="btn f20 db" href="javascript:;">获取1S版本</a>
+							</div>
+                            <div id="page" class="pageCont section back ffms rows">
+								
+								<div class="page">
+									<a id="close" class="close db" href="javascript:;" onclick="">关闭</a>
+									<div class="inner layout">
+										<h3 class="f20">For Yours</h3>
+										<p class="sub hvc f14">如果您在点名时间上支持过我们众筹活动，我们承诺过，会送您一枚新的1S版快按钮，您可以通过姓名、电话并且留下您的收件地址，我们将为您尽快的寄出一枚</p>
+										<div class="lines"></div>
+										<dl class="info ffms layout">
+											<dt class="f16">姓名：</dt>
+											<dd>
+												<input class="f16 text-input" type="input" placeholder="请输入你的姓名"/>
+												<div class="error f14">支持者不存在</div>
+											</dd>
+										</dl>
+										<dl class="info ffms layout">
+											<dt class="f16">电话：</dt>
+											<dd>
+												<input class="f16 text-input" type="input" placeholder="请输入您的电话号码"/>
+												<div class="error f14">电话信息错误</div>
+											</dd>
+										</dl>
+										<dl class="info ffms layout">
+											<dt class="f16">地址：</dt>
+											<dd>
+												<input class="f16 text-input" type="input" placeholder="请输入您的收件地址"/>
+												
+											</dd>
+										</dl>
+										<a id="submit" class="btn f20 db" href="##">提交</a>
+									</div>
+								</div>
+                            </div>
+							<div id="hand" class="section hand hand_cont">
+								
+							</div>
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+		<script type="text/javascript">
+			var clientHeight=document.documentElement.clientHeight;
+			baidu('.slide01').css('height',clientHeight)
+		</script>
+		<script type="text/javascript" src="../js/act.js"></script>
+		
+    </body>
+</html>
