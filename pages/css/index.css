@@ -101,7 +101,7 @@
     position : fixed;
     right    : 77px;
     top      : 50%;
-	z-index:99999;
+	z-index:99999999;
 }
 
 .wrapper .gallery .buttons .indicator {
@@ -111,10 +111,13 @@
     height     : 14px;
     border-radius : 8px;
     background : rgba(0, 0, 0, 0.4);
+    background : #000\9;
+	filter:alpha(opacity=40);
 }
 
 .wrapper .gallery .buttons .indicator.selected {
     background : rgba(188, 40, 40, 0.4);
+    background : #bc2828\9;
 }
 
 .wrapper .gallery .slide {
@@ -567,3 +570,5 @@ filter:alpha(opacity=0);
 	left:-30%;
 	z-index:998;
 }
+
+@media (max-width: 767px)
