@@ -104,20 +104,20 @@
 })();
 aAnimateJson=[
 	{
-		text:{
+		img:{
 			animateObject:{
-				opacity:1
+				opacity:1,
+				left:'0%'
 			},
-			speed:800,
-			delay:1000
+			speed:800
 		},
-		img:[1000,1000]
+		text:[1000,800]
 	},
 	{
-		img:[800,0],
-		title:{
+		title:[800,800],
+		img:{
 			animateObject:{
-				right:'100',
+				left:'5%',
 				opacity:1
 			},
 			speed:800,
