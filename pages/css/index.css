@@ -124,6 +124,7 @@
     background-size : cover;
     position        : relative;
 	background-color:#fefefe;
+	overflow:hidden;
 }
 
 .wrapper .gallery .slide .section {
