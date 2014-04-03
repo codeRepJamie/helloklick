@@ -13,7 +13,7 @@
 }
 
 .wrapper {
-    min-width : 1200px;
+    width : 100%;
 }
 
 .wrapper .header {
@@ -27,9 +27,7 @@
 }
 
 .wrapper .header .navbar {
-    height : 72px;
-    margin : 0 auto;
-    width  : 1200px;
+    margin : 0 10%;
 }
 
 .wrapper .header .navbar .logo {
@@ -95,6 +93,7 @@
 }
 
 .wrapper .gallery .slides {
+	overflow:hidden;
 }
 
 .wrapper .gallery .buttons {
@@ -298,6 +297,7 @@
 .wrapper .gallery .slide .section img {
     display : block;
     margin  : 0 auto;
+	max-width:100%;
 }
 
 .wrapper .footer {
@@ -306,9 +306,9 @@
 }
 
 .wrapper .footer .navbar {
-    width   : 1200px;
+    width   : 80%;
     margin  : 0 auto;
-    padding : 30px 0px;
+    padding : 30px 0;
 }
 
 .wrapper .footer .navbar dl {
@@ -543,6 +543,9 @@ filter:alpha(opacity=0);
 	-o-background-size: cover;
 	background-size: cover;
 }
+.app .gallery .slide02 .img_cont img{
+	max-width:100%;
+}
 .app .gallery .slide02 .btn{
 	background-color:#8a8a8a;
 	margin-top:90px;
@@ -558,6 +561,9 @@ filter:alpha(opacity=0);
 	opacity:0;
 	z-index:999;
 }
+.app  .gallery .slide02 .section .title_cont img{
+	max-width:100%;
+}
 .app .header {
 	background:none;
 	border-bottom-color:#484d66;
@@ -570,5 +576,263 @@ filter:alpha(opacity=0);
 	left:-30%;
 	z-index:998;
 }
+@media (max-width: 319px){
+.wrapper .header .navbar .logo{
+	display:none;
+}
+}
 
-@media (max-width: 767px)
+
+@media (max-width: 320px){
+.wrapper{
+	width:100%;
+	min-width:0;
+}
+.wrapper .header .navbar .logo{
+	width:60px;
+	height:60px;
+	background-size:cover;
+	display:inline-block;
+	float:left;	
+}
+.wrapper .header .navbar{
+	width: 100%;
+	margin:0;
+}
+.wrapper .header .navbar ul{
+	margin:0;
+	display:inline-block;
+	/* float:left; */
+	width:240px;
+	margin:auto 0;
+	margin-top:5px;
+}
+.wrapper .header .navbar ul li a{
+	margin: 0 15px;
+}
+.wrapper .gallery .buttons{
+	visibility:hidden;
+	z-index:0;
+}
+.wrapper .gallery .slide .section{
+	height:400px;
+	margin-top:-200px;
+}
+.app .gallery .slide .download{
+	/* margin-top:-113px; */
+}
+.app .gallery .slide01 .section .img_cont{
+	width:590px;
+	height:auto;
+	margin:60px 0 0 -30px;
+}
+.ico_android_download{
+	display:none;
+}
+.wrapper .gallery .slide01 .section .sub{
+	font-size:12px;
+	line-height:1.2em;
+	bottom: 35px;
+}
+.app .slide02 .img_cont{
+	width: 590px;
+	height:auto;
+	margin: -100px 0 0 -40px;
+}
+.app .gallery .slide02 .section .title_cont{
+	width:95%;
+	top: 12%;
+}
+.wrapper .footer .navbar{
+	padding: 15px 0px;
+	width:100%;
+}
+.wrapper .footer .navbar dl{
+	float:none;
+	width: auto;
+	margin-left:15px;
+}
+.wrapper .footer .navbar dl dt{
+	font-size: 14px;
+	line-height: 2em;
+	clear:both;
+}
+.wrapper .footer .navbar dl dd{
+	float:left;
+	margin-right:15px;
+}
+}
+@media  (min-width:321px) and (max-width: 643px){
+.wrapper .header .navbar{
+	margin:0;
+}
+.wrapper .header .navbar ul li a{
+	margin: 0 15px;
+}
+.wrapper .header .navbar .logo{
+	width:60px;
+	height:60px;
+	background-size:cover;
+	display:inline-block;
+	float:left;	
+}
+.wrapper .header .navbar ul{
+	margin:0;
+	display:inline-block;
+	width:78%;
+	margin:auto 0;
+	margin-top:5px;
+}
+}
+
+
+@media  (min-width:643px) and (max-width: 768px){
+.wrapper .header .navbar{
+	margin: 0;
+}
+.wrapper .header .navbar ul{
+	margin:0;
+	float:left;
+	width:auto;
+	margin: 24px 0px;
+}
+.wrapper .header .navbar ul li a{
+	margin: 0 15px;
+}
+.wrapper .header .navbar .logo{
+	width:72px;
+	height:72px;
+	float:left;
+}
+.wrapper .gallery .slide .section{
+	height:700px;
+}
+.app .gallery .slide .download {
+right: 50%;
+top: 10%;
+bottom: auto;
+margin-right: -185px;
+}
+.wrapper .gallery .slide .btn{
+	margin: 50px 0;
+}
+.app .gallery .slide01 .section .img_cont{
+	width:560px;
+	height:auto;
+	top:auto;
+	bottom:30px;
+}
+.app .gallery .slide02 .section .title_cont{
+	margin-right: -150px;
+	right: 50%;
+	top:auto;
+	margin-top:0;
+}
+}
+
+
+@media  (min-width:769px) and (max-width: 1024px){
+.wrapper{
+	width:100%;
+	min-width:0;
+}
+.wrapper .header .navbar{
+	width: 100%;
+	margin:0;
+}
+.wrapper .header .navbar ul li a{
+	margin: 0 15px;
+}
+.wrapper .header .navbar .logo{
+	background-size:cover;
+	display:inline-block;
+	float:left;
+}
+.wrapper .gallery .buttons{
+	right:5%;
+}
+.wrapper .gallery .slide .section{
+	height:600px;
+	margin-top:-300px;
+}
+.app .gallery .slide .download{
+	right:-7%;
+}
+.app .gallery .slide01 .section .img_cont{
+	width:450px;
+	height:auto;
+	margin:60px 0 0 -30px;
+}
+.ico_android_download{
+	/* display:none; */
+}
+
+.app .slide02 .img_cont{
+	/* width: 590px;
+	height:auto;
+	margin: -100px 0 0 -40px; */
+}
+.app .gallery .slide02 .section .title_cont{
+	margin-top: -250px;
+	right: 0;
+}
+.wrapper .footer .navbar{
+	/* padding: 15px 0px; */
+}
+.wrapper .footer .navbar dl{
+	/* float:none;
+	width: auto;
+	margin-left:15px; */
+}
+.wrapper .footer .navbar dl dt{
+	/* font-size: 14px;
+	line-height: 2em;
+	clear:both; */
+}
+.wrapper .footer .navbar dl dd{
+	/* float:left;
+	margin-right:15px; */
+}
+}
+
+
+@media  (min-width:1025px) and (max-width: 1366px){
+	.app .gallery .slide01 .section .img_cont{
+		width:685px;
+		height:auto;
+	}
+}
+
+@media  (min-width:1441px) {
+	.app .gallery .slide01 .section .img_cont img,.app .slide02 .img_cont img{
+		min-width:100%;
+	}
+}
+@media  (min-width:1441px) and (max-width: 1680px){
+	.wrapper .gallery .slide .section{
+		height:730px;
+		margin-top:-365px;
+	}
+	.app .gallery .slide01 .section .img_cont{
+		width:840px;
+		height:auto;
+	}
+	.app .slide02 .img_cont{
+		width:1170px;
+		height:auto;	
+	}
+}
+@media  (min-width: 1681px){
+	.wrapper .gallery .slide .section{
+		height:80%;
+		margin-top:-20%;
+	}
+	.app .gallery .slide01 .section .img_cont{
+		width:68%;
+		height:auto;
+	}
+	.app .slide02 .img_cont{
+		width:68%;
+		height:auto;	
+	}	
+}
