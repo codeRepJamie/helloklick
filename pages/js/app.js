@@ -132,7 +132,8 @@ baidu.dom.ready(function(){
 	// right float menu
 	var menu  = baidu.dom.q('menu')[0],
 		arr   = menu.getElementsByTagName('li'),
-		rows  = baidu.dom.q('rows');
+		rows  = baidu.dom.q('rows')
+		
 
 	var curElem = arr[0];
 	function MenuHoverFn(elem, flag, index){
@@ -206,11 +207,15 @@ baidu.dom.ready(function(){
 
 	(window.onresize = function(){
 		// 跟随客户端高度;
+		var section=null;
 		var height = document.documentElement.clientHeight;
-		if ( height < 600 ) height = 600;
+		//if ( height < 600 ) height = 600;
 		for(var i = 0;i < rows.length;i++) {
 			i === 2 && (height = baidu('.footer').outerHeight(true)-60);
 			rows[i].style.height = height + 'px';
+			section = baidu(".section:eq("+i+")");
+			section.css('margin-top',(-((parseInt(section.css('height'))/2)-(i==0?30:0))));
+			//console.log(section.css('top'));
 		}
 		baidu.MenuMidden(menu);
 	})();

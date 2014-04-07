@@ -130,7 +130,7 @@ aAnimateJson=[
 		text:[800,1800],
 		img:{
 			animateObject:{
-				top:'130',
+				top:'20%',
 				opacity:1
 			},
 			speed:800,
@@ -221,10 +221,12 @@ baidu.dom.ready(function(){
 	(window.onresize = function(){
 		// 跟随客户端高度;
 		var height = document.documentElement.clientHeight;
-		if ( height < 600 ) height = 600;
+		//if ( height < 600 ) height = 600;
 		for(var i = 0;i < rows.length;i++) {
 			i === 5 && (height = baidu('.footer').outerHeight(true)-60);
 			rows[i].style.height = height + 'px';
+			section = baidu(".section:eq("+i+")");
+			section.css('margin-top',(-((parseInt(section.css('height'))/2)-(i==0?30:0))));			
 		}
 		baidu.MenuMidden(menu);
 	})();

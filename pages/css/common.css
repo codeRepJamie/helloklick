@@ -43,6 +43,12 @@ a:hover{
 .tac{
 	text-align:center;
 }
+.tal{
+	text-align:left;
+}
+.tar{
+	text-align:right;
+}
 .hvc{
 	font-family:HelveticaLight,helvetica,sans-serif;
 }
@@ -56,37 +62,46 @@ a:hover{
 	font-smoothing:antialiased;
 }
 .f14{
-	font-size:14px;
+	font-size:1.4em;
 }
 .f16{
-	font-size:16px;
+	font-size:1.6em;
+}
+.f18{
+	font-size:1.8em;
 }
 .f20{
-	font-size:20px;
+	font-size:2.0em;
 }
 .f24{
-	font-size:24px;
+	font-size:2.4em;
 }
 .f28{
-	font-size:28px;
+	font-size:2.8em;
 }
 .f30{
-	font-size:30px;
+	font-size:3.0em;
 }
 .f32{
-	font-size:32px;
+	font-size:3.2em;
 }
 .f35{
-	font-size:35px;
+	font-size:3.5em;
 }
 .f36{
-	font-size:36px;
+	font-size:3.6em;
 }
 .f42{
-	font-size:42px;
+	font-size:4.2em;
 }
 .f80{
-	font-size:80px;
+	font-size:8.0em;
+}
+.red{
+	color:#ab1717;
+}
+.gray{
+	color:#737373;
 }
 .fwnr{
 	font-weight:normal;
@@ -104,11 +119,15 @@ a:hover{
 	display: block;
 }
 .btn{
-	background-color:#ac1616;
+	background:#ac1616;
 	display:inline-block;
 	border-radius:3px;
 	color:#FFF;
 	text-align:center;
+}
+.btn:hover{
+	background:#d03a3a;
+	color:#FFF;
 }
 .db{
 	display:block;
