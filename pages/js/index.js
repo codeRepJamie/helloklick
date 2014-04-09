@@ -225,8 +225,10 @@ baidu.dom.ready(function(){
 		for(var i = 0;i < rows.length;i++) {
 			i === 5 && (height = baidu('.footer').outerHeight(true)-60);
 			rows[i].style.height = height + 'px';
-			section = baidu(".section:eq("+i+")");
-			section.css('margin-top',(-((parseInt(section.css('height'))/2)-(i==0?30:0))));			
+			/* section = baidu(".section:eq("+i+")");
+			if(i!=2){
+			section.css('margin-top',(-((parseInt(section.css('height'))/2)-(i==0?30:0))));	
+			} */
 		}
 		baidu.MenuMidden(menu);
 	})();

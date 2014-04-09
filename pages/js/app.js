@@ -117,7 +117,7 @@ aAnimateJson=[
 		title:[800,800],
 		img:{
 			animateObject:{
-				left:'5%',
+				left:'15%',
 				opacity:1
 			},
 			speed:800,
@@ -213,9 +213,9 @@ baidu.dom.ready(function(){
 		for(var i = 0;i < rows.length;i++) {
 			i === 2 && (height = baidu('.footer').outerHeight(true)-60);
 			rows[i].style.height = height + 'px';
-			section = baidu(".section:eq("+i+")");
+			/*section = baidu(".section:eq("+i+")");
 			section.css('margin-top',(-((parseInt(section.css('height'))/2)-(i==0?30:0))));
-			//console.log(section.css('top'));
+			//console.log(section.css('top'));*/
 		}
 		baidu.MenuMidden(menu);
 	})();
