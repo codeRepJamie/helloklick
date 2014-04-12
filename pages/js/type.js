@@ -11,7 +11,7 @@
 		},
 		img:[1000,1000]
 	}
-] */
+] 
 baidu.dom.ready(function(){
 	baidu('#getForm').on('click',function(){
 		baidu('#hand').stop(true,false).animate({
@@ -189,4 +189,4 @@ $(function() {
       $("#submit").click(function() {
         $.jqalert("提交成功！");
       });
-    });
+    });*/

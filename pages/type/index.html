@@ -38,7 +38,7 @@
                             <li><a href="../home/index.html">Home</a></li>
                             <li><a href="../app/index.html">APP</a></li>
                             <li><a href="#">Feedback</a></li>
-                            <li><a href="#">BBS</a></li>
+                            <li><a href="../type/index.html">BBS</a></li>
                             <li><span class="vline"></span></li>
                             <li><a class="button" id="btnsignin" href="#">Login</a></li>
                             <li><a class="button" id="btnsignup" href="#">Sign</a></li>
@@ -80,8 +80,8 @@
 						<h1 class="span3 f24 red">按品牌查看</h1>
 					</div>
 					<ul class="categorys layout">
-                            <li style="background-position: -140px -84px;">
-                                    <p name="all" class="phover"></p>
+                            <li style="background-position: -140px -80px;">
+                                    <p name="all" class="phover"><i class="select"></i></p>
                             </li>
                             <li>
                                     <p name="1"></p>
@@ -117,19 +117,19 @@
 								<div class="phone_img">
 									<img src="../images/type/phone01.png" alt=""/>
 								</div>
-								<p>中兴 N5</p>
+								<p>中兴 N5 <i class="correct"></i></p>
 							</li>
 							<li class="items">
 								<div class="phone_img">
 									<img src="../images/type/phone01.png" alt=""/>
 								</div>
-								<p>中兴 N5</p>
+								<p>中兴 N5<i class="error"></i></p>
 							</li>
 							<li class="items">
 								<div class="phone_img">
 									<img src="../images/type/phone01.png" alt=""/>
 								</div>
-								<p>中兴 N5</p>
+								<p>中兴 N5<i class="other"></i></p>
 							</li>
 							<li class="items">
 								<div class="phone_img">
@@ -221,7 +221,7 @@
 		<script type="text/javascript" src="../js/type.js"></script>
 		<script type="text/javascript">
 			var positionX = ["-140px", "-298px", "-456px", "-614px", "-772px", "-930px", "-1088px", "-1246px", "-1404px", "-1562px", "-1676px", "-1550px"];
-	var positionY = [" -2px", " -84px", " -166px"];
+	var positionY = [" 2px", " -80px", " -162px"];
 			var categorys = ["小米","Google","HTC","Samsung","MOTO","LG","索爱","中兴","OPPO","华为","MTK","其他品牌"];
 			function liHover() {
 				var index = $("categorys p").index($(this));
@@ -249,6 +249,16 @@
                         }
                 }
 			)
+			$(".categorys p").click(function(){
+				 for (var i = 0; i < lis.length; i++) {
+					lis.eq(i).css("backgroundPosition", positionX[i] + " " + positionY[0]);
+				 }
+				  $(".categorys .phover").removeClass('phover');
+				 $(".categorys .select").remove();
+				  $(this).append('<i class="select"></i>');
+				 var index = $(".categorys p").index($(this));
+                 $(this).addClass('phover').parent().css("backgroundPosition" , positionX[index] + positionY[2]);
+			})
 		</script>
     </body>
 </html>
