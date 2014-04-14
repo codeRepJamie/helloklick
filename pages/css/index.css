@@ -19,6 +19,9 @@
 ._container {
 	font-size:77%;
 }
+._container .gallery{
+	font-size:77%;
+}
 
 .wrapper {
     width : 100%;
@@ -253,7 +256,7 @@
 	right:0;
 	top:50%;
 	margin:auto;
-	width:69%;
+	width:50%;
 }
 .home .gallery .slide04 .section .sub_text{
 	position:absolute;
@@ -268,13 +271,31 @@
 	float:left;
 	display:inline;
 	width:50%;
+	height:100%;
+	position:relative;	
 }
 .wrapper .gallery .slide .lfColumn{
-	height:100%;
-	margin-left:-30px;
+
+
+
+}
+.wrapper .gallery .slide .lfColumn .static_cont{
+	width:90%;
+	position:absolute;
+	top:0;
+	bottom:0;
+	margin:auto;	
+	height:80%;
 }
 .wrapper .gallery .slide .rgColumn .textField{
-	margin-left:140px;
+margin: auto;
+height: 56%;
+width: 71%;
+left:0;
+right:0;
+position:absolute;
+	top:0;
+	bottom:0;
 }
 .wrapper .gallery .slide .rgColumn .title em{
 	color:#ac1616;
@@ -328,7 +349,13 @@
     float : left;
     width : 30%;
 }
-
+.wrapper .footer .navbar dl dd{
+	width:80%;
+}
+.wrapper .footer .navbar dl .copyright{
+	color:#666;
+	padding-top: .5em;
+}
 .wrapper .footer .navbar dl dt {
     color       : white;
     font-size   : 1.8em;
@@ -493,8 +520,8 @@
 	margin:0 auto;
 }
 .home .gallery .slide01 .img_cont{
-	width:53%;
-	margin:0 auto;
+width: 45%;
+margin: 4% auto;
 }
 .home .gallery .slide02 {
 	background-image    : url(../images/index/box2/bg_box2.jpg);
@@ -726,7 +753,7 @@ filter:alpha(opacity=0);
 .wrapper .header .navbar .logo{
 	display:none;
 }
-._container{
+._container .gallery{
 	font-size:50%;
 }
 .wrapper{
@@ -883,7 +910,7 @@ margin-left: -45px;
 }
 }
 @media  (min-width:321px) and (max-width: 640px){
-._container{
+._container .gallery{
 	font-size:80%;
 }
 .wrapper .gallery .buttons{
@@ -1001,7 +1028,7 @@ margin-left: -65px;
 
 
 @media  (min-width:641px) and (max-width: 768px){
-._container{
+._container .gallery{
 	font-size:90%;
 }
 .wrapper .header .navbar{
@@ -1123,7 +1150,7 @@ width: 74%;
 
 
 @media  (min-width:769px) and (max-width: 1024px){
-._container{
+._container .gallery{
 	font-size:77%;
 }
 .wrapper{
@@ -1218,7 +1245,7 @@ width: 74%;
 	/* .app .gallery .slide01 .section .img_cont img,.app .slide02 .img_cont img,.wrapper .gallery .slide .section .title img{
 		min-width:100%;
 	} */
-	._container{
+	._container .gallery{
 		font-size:100%;
 	}
 	.wrapper .gallery .slide img{
@@ -1251,7 +1278,7 @@ width: 74%;
 		margin-top:-20%; */
 	}
 	.wrapper .gallery .slide .section .static_cont{
-		width:100%;
+		/* width:100%; */
 	}
 	.app .gallery .slide01 .section .img_cont{
 		/* width:64%; */
