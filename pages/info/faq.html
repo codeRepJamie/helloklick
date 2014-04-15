@@ -1,0 +1,384 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Hello Klick</title>
+<!-- Bootstrap css file v2.2.1 -->
+<link rel="stylesheet" type="text/css" href="../bootstrap/css/bootstrap.css">
+<!-- bsie css 补丁文件 -->
+<!--[if IE 6]>
+		  <link rel="stylesheet" type="text/css" href="../bootstrap/css/bootstrap-ie6.min.css">
+		  <![endif]-->
+<!-- bsie 额外的 css 补丁文件 -->
+<!--[if IE]>
+		  <link rel="stylesheet" type="text/css" href="../bootstrap/css/ie.css">
+		  <![endif]-->
+<link rel="stylesheet" href="../css/common.css" />
+<link rel="stylesheet" href="../css/index.css" />
+<!-- <script src="../js/jquery-1.10.2.js"></script> -->
+
+<script src="../js/response.min.js"></script>
+
+<!-- <script type="text/javascript" src="../require.js"></script> -->
+<!-- <script type="text/javascript">
+            require(['index'], function(Gallery) {
+                new Gallery().gotoSlide(0);
+            });
+        </script> -->
+</head>
+<body>
+<div class="_container">
+  <div class="wrapper info">
+    <div class="header">
+      <div class="navbar layout"> <span class="logo"></span>
+        <ul>
+          <li><a href="../home/index.html">Home</a></li>
+          <li><a href="../app/index.html">APP</a></li>
+          <li><a href="#">Feedback</a></li>
+          <li><a href="../type/index.html">BBS</a></li>
+          <li><span class="vline"></span></li>
+          <li><a class="button" id="btnsignin" href="#">Login</a></li>
+          <li><a class="button" id="btnsignup" href="#">Sign</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="wrapper">
+      <div id="info-banner"> 我们是...有梦想的年轻群体 —— Let's KlicK 快按钮 </div>
+      <div id="info-content">
+            <h2>常见问题</h2>
+            <div class="article" id="faq">
+                <ul>
+                    <li>一、 快按钮有什么用？
+                        <ul>
+                            <li>问：快按钮能干什么？
+                                <p>答：快按钮是一款安卓手机的智能快捷键。只要将其插进移动设备的耳机插孔，快按钮就可以充当任意快捷键了。为用户提供快捷、自由的人机交互体验。快按钮提供十余种快捷功能，并在不断的软件升级中添加更多有趣的功能。</p>
+                            </li>
+                            <li>问：用之前需要下载软件么？
+                                <p>答：需要您下载一个快按钮的应用程序，安装设定手势之后就可使用了（下载地址： <a href="#" target="_blank">download.helloklick.com</a>）。</p>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>二、 快按钮怎么使用？
+                        <ul>
+                            <li>问：快按钮插在哪里？
+                                <p>答：试一试手机上的所有孔，能插进去的那个就是了，我们通常把它称为耳机插孔。</p>
+                            </li>
+                            <li>问：苹果手机和WP可以使用快按钮么？
+                                <p>答：我们现在没有开放 IOS 和 Windows Phone 的应用APP。因为臣妾做不到呀，API限制太强有木有。快按钮团队真挚的呼唤强有力的开发者联盟可以让快按钮适配任何一部智能手机。</p>
+                            </li>
+                            <li>问：快按钮一共可以有多少种手势组合？
+                                <p>答：用户可以最多设置是八种不同的手势组合。除此之外，尽管是相同的操作手势，但是在不同的操作环境下也可能有不同的对应操作。比如当有电话呼入的时候，一次点击代表接电话；当没有电话呼入的时候，一次点击代表着其他操作。</p>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>三、 为什么我的快按钮不能正常使用？
+                        <ul>
+                            <li>问：为什么将快按钮插进耳机后，按动没有反应？
+                                <p>答：亲，您要先下载快按钮的应用程序（下载地址：<a href="#" target="_blank">download.helloklick.com</a> 或扫描包装上的二维码）。下载安装完后，设定相应的按动手势（长按、短按或长短按组合），就可以正常使用快按钮了。</p>
+                            </li>
+                            <li>问：为什么插入快按钮后，有些时候打电话听筒没有声音？
+                                <p>答：在插入快按钮或者耳机后，系统会弹出选项框让您选择插入的设备是快按钮还是耳机，请您进行相应选择，以免造成听筒无声音的状态。同时，如果您一旦发现在插入快按钮后听筒无声音，您也可以在快按钮应用程序中的设置页面中切换"听筒模式"至开启。</p>
+                            </li>
+                            <li>问：为什么打开快按钮应用程序后会跳出 S-Voice 或者小Hi等莫名其妙的程序（对于部分三星/htc手机）？
+                                <p>答：由于这是系统级别的大招，所以建议用户停用该应用。如果无法停用，快按钮程序将只提供四种手势（取消所有长按相关手势），敬请谅解。你也可以通过Root等方式，强行关闭相应功能。为了快按钮，什么都值了！</p>
+                            </li>
+                            <li>问：按下去手机总是一震一震的怎么回事？
+                                <p>答：为了让您感受到按动快按钮的反馈，快按钮团队专门设计了振动反馈机制。这样您就可以准确的知道您所按动的手势了。</p>
+                            </li>
+                            <li>问：打开快按钮的页面，不会用怎么办？
+                                <p>答：快按钮团队在快按钮应用程序主页面的左上角放有帮助提醒，您可以点击图标进入帮助指引页面。</p>
+                            </li>
+                            <li>问：如果您想要与快按钮团队取得联系怎么办？
+                                <p>答：我们在APP的设置页面中留有反馈功能，您可以通过反馈跟快按钮团队取得联系；同时您也可以直接发送邮件至：customer@helloklick.com。</p>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+      <ul id="info-sidebar">
+        <li><a href="index.html" class="about current">关于快按钮</a>
+          <ul>
+            <li><a href="index.html">快按钮介绍</a></li>
+            <li><a href="guide.html" >使用说明</a></li>
+            <li><a href="faq.html"  class="active">常见问题</a></li>
+            <li><a href="#" >服务支持</a></li>
+            <li><a href="#" >抢购支持</a></li>
+          </ul>
+        </li>
+        <li><a href="#" class="join ">加入我们</a>
+          <ul>
+            <li><a href="#" >团队介绍</a></li>
+            <li><a href="job.html" >招聘说明</a></li>
+            <li><a href="#" >经销商</a></li>
+          </ul>
+        </li>
+        <li><a href="feedback.html" class="feedback ">问题反馈</a></li>
+      </ul>
+      <div class="clearfix"></div>
+    </div>
+    <div class="footer">
+      <div class="navbar rows layout">
+        <dl>
+          <dt>Our Product</dt>
+          <dd>Thermodo</dd>
+          <dd>Premium Thermodo</dd>
+          <dd>RObocat STicker</dd>
+        </dl>
+        <dl>
+          <dt>About</dt>
+          <dd>Thermodo is a tiny electrical thermometer that measures the temperature right measures the tempearature right where you are for iPhone, iPad & Android all through the audio jack of your device.</dd>
+        </dl>
+        <dl>
+          <dt>Made by Klick</dt>
+          <dd>Thermodo is designed and developed by a small team form Denmark called Robocat</dd>
+          <dd class="copyright">&copy;Robocat LLC - All Rights Reserved</dd>
+        </dl>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- jQuery 1.7.2 or higher -->
+		  <script type="text/javascript" src="../js/jquery-1.10.2.js"></script>
+
+		  <!-- Optional, bootstrap javascript library -->
+		  <script type="text/javascript" src="../bootstrap/js/bootstrap.js"></script>
+
+		  <!--[if lte IE 6]>
+		  <!-- bsie js 补丁只在IE6中才执行 -->
+		  <script type="text/javascript" src="../js/bootstrap-ie.js"></script>
+		  <![endif]-->
+<script type="text/javascript" src="http://www.helloklick.com/assets/js/layer.min.js?v=1.70"></script> 
+<script type="text/javascript" src="http://www.helloklick.com/assets/js/klick.js?v=20140214"></script> 
+<script type="text/javascript">
+$(document).ready(function() {
+	$('footer a').click(function(){
+		if($(this).attr('href') == '#'){
+			layer.alert('快按钮官网仍在努力的构建中，尽请期待！', 11);
+			return false;
+		}
+	});
+	
+	$('#info-sidebar a').click(function(){
+		if($(this).attr('href') == '#'){
+			layer.alert('快按钮官网仍在努力的构建中，尽请期待！', 11);
+			return false;
+		}
+	});
+    
+    // Ajax预定
+    $('#do-ok-btn').click(function(e){
+        //检查表单数据
+        $user_name = $('#order-box #username');
+        $user_tel = $('#order-box #tel');
+        $user_email = $('#order-box #email');
+		$error = $('#order-box .text-error');
+
+        $user_name.removeClass('has-error');
+        $user_tel.removeClass('has-error');
+        $user_email.removeClass('has-error');
+
+        if($user_name.val() == ''){
+            $user_name.addClass('has-error').focus();
+            $error.text('请填写您的姓名，便于我们联系你');
+            return false;
+        }
+
+        if($user_tel.val() == '' || !$user_tel.val().match(/^1[3|4|5|8][0-9]\d{4,8}$/)){
+            $user_tel.addClass('has-error').focus();
+            $error.text('请填写正确的手机号，便于我们联系你');
+            return false;
+        }
+
+        if($user_email.val() == '' || !$user_email.val().match(/^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$/)){
+
+            $user_email.addClass('has-error').focus();
+            $error.text('请填写您的邮箱，便于我们联系你');
+            return false;
+        }
+
+        //提交表单
+        $.post(
+            "http://www.helloklick.com/index.php/site/do_order",
+            {user_name:$user_name.val(), user_tel:$user_tel.val(), user_email:$user_email.val()},
+            function(data){
+                if(data >= 0){
+                    $('#order-box .text-error').text('');
+                    $('#order-box #username').text('');
+                    $('#order-box #tel').text('');
+                    $('#order-box #email').text('');
+                    $('#order-box .close-link').click();
+                    $('#order-success .name').text($user_name.val());
+                    $('#order-success .tel').text($user_tel.val());
+                    $('#order-success .email').text($user_email.val());
+                    var success = $.layer({
+                        type: 1,
+                        title:false,
+                        shadeClose: true,
+                        closeBtn:[0, false],
+                        bgcolor: '',		/* 弹出框背景色，空字符为透明 */
+                        border:[0],
+                        shade: [0.6, '#000', true],
+                        offset:['120px', ''],
+                        area:  ['400px', '500px'],
+                        page:  {dom: '#order-success'}
+                    });
+                    $('#order-success .close-link').on('click', function(){
+                        window.location.reload();
+                    });
+
+                }else if(data == -1){
+                    $error.text('这个手机号码已经预定过了');
+                    $user_tel.addClass('has-error').focus();
+                }/*else if(data == -2){
+                    $error.text('这个邮箱地址已经预定过了');
+                    $user_email.addClass('has-error').focus();
+                }*/else{
+                    $error.text('预定失败！请微博私信我们：快按钮KlicK');
+                }
+            } 
+        );
+    });
+
+	// Ajax登录
+	$('#do-signin-btn').click(function(e){
+		// 检查表单数据
+		$email = $('#signin-box #username');
+		$password = $('#signin-box #password');
+		$error = $('#signin-box .text-error');
+		
+		$email.removeClass('has-error');
+		$password.removeClass('has-error');
+		
+		if($email.val() == ''){
+			$email.addClass('has-error').focus();
+			$error.text('用户名/电子邮箱不能为空！');
+			return false;
+		}
+		if($password.val() == ''){
+			$password.addClass('has-error').focus();
+			$error.text('密码不能为空！');
+			return false;
+		}
+		
+		// 提交表单
+		$.post(
+			"http://www.helloklick.com/index.php/site/do_signin", 
+			{email: $email.val(), password: $password.val()},
+   			function(data){
+     			if(data >= 0){
+					// 登录成功
+					window.location.reload();
+				}
+				else if(data == -1){
+					// 未注册
+					$error.text('该邮箱未注册！');
+					$email.addClass('has-error').focus();
+				}
+				else if(data == -2){
+					// 密码不正确
+					$error.text('您输入的密码不正确！');
+					$password.addClass('has-error').focus();
+				}
+				else{
+					// 其他错误
+					$error.text('登录失败！');
+				}	
+   			}
+		);
+	});
+	
+	// Ajax注册
+	$('#do-signup-btn').click(function(e){
+		// 检查表单数据
+		$email = $('#signup-box #email');
+		$username = $('#signup-box #username');
+		$password = $('#signup-box #password');
+		$repassword = $('#signup-box #repassword');
+		$error = $('#signup-box .text-error');
+		
+		$email.removeClass('has-error');
+		$username.removeClass('has-error');
+		$password.removeClass('has-error');
+		$repassword.removeClass('has-error');
+		
+		if($email.val() == ''){
+			$email.addClass('has-error').focus();
+			$error.text('电子邮箱不能为空！');
+			return false;
+		}
+		if($username.val() == ''){
+			$username.addClass('has-error').focus();
+			$error.text('用户名不能为空！');
+			return false;
+		}
+		if($password.val() == ''){
+			$password.addClass('has-error').focus();
+			$error.text('密码不能为空！');
+			return false;
+		}
+		if($repassword.val() == ''){
+			$repassword.addClass('has-error').focus();
+			$error.text('确认密码不能为空！');
+			return false;
+		}
+		if($repassword.val() != $password.val()){
+			$password.val('');
+			$repassword.val('');
+			$password.addClass('has-error').focus();
+			$error.text('密码与确认密码不一致！');
+			return false;
+		}
+		
+		// 提交表单
+		$.post(
+			"http://www.helloklick.com/index.php/site/do_signup", 
+			{email: $email.val(), username: $username.val(), password: $password.val()},
+   			function(data){
+     			if(data >= 0){
+					// 注册成功
+					$error.text('注册成功，已自动登录，即将跳转……');
+					setTimeout(window.location.reload(), 3000);
+				}
+				else if(data == -1){
+					// 用户名不合法
+					$error.text('用户名不合法！请选择其他用户名。');
+					$username.addClass('has-error').focus();
+				}
+				else if(data == -2){
+					// 包含不允许注册的词语
+					$error.text('用户名包含不允许注册的词语！请选择其他用户名。');
+					$username.addClass('has-error').focus();
+				}
+				else if(data == -3){
+					// 用户名已经存在
+					$error.text('用户名已存在！请选择其他用户名。');
+					$username.addClass('has-error').focus();
+				}
+				else if(data == -4){
+					// 邮件格式有误
+					$error.text('Email格式有误！请检查邮件地址的拼写。');
+					$email.addClass('has-error').focus();
+				}
+				else if(data == -5){
+					// Email 不允许注册
+					$error.text('该Email不允许注册！请选择其他邮件地址。');
+					$email.addClass('has-error').focus();
+				}
+				else if(data == -6){
+					// 已注册
+					$error.text('该邮箱已注册！请选择其他邮箱。');
+					$email.addClass('has-error').focus();
+				}
+				else{
+					// 其他错误
+					$error.text('注册失败！');
+				}	
+   			}
+		);
+	});
+});		  
+</script>
+</body>
+</html>
