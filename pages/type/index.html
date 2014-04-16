@@ -38,9 +38,9 @@
                             <li><a href="../home/index.html">Home</a></li>
                             <li><a href="../app/index.html">APP</a></li>
                             <li><a href="#">Feedback</a></li>
-                            <li><a href="../type/index.html">BBS</a></li>
+                            <li><a href="../type/index.html">BBS</a></li><li><a href="../info/index.html">About</a></li>
                             <li><span class="vline"></span></li>
-                            <li><a class="button" id="btnsignin" href="#">Login</a></li>
+                            <li><a class="button" id="btnlogin" href="#">Login</a></li>
                             <li><a class="button" id="btnsignup" href="#">Sign</a></li>
                         </ul>
                     </div>
@@ -210,6 +210,8 @@
 		  <!--[if lte IE 6]>
 		  <!-- bsie js 补丁只在IE6中才执行 -->
 		  <script type="text/javascript" src="../js/bootstrap-ie.js"></script>
+		  <script type="text/javascript" src="http://www.helloklick.com/assets/js/layer.min.js?v=1.70"></script> 
+		<script>
 		  <![endif]-->
 		<script type="text/javascript" src="../js/type.js"></script>
 		<script type="text/javascript">
@@ -252,6 +254,26 @@
 				 var index = $(".categorys p").index($(this));
                  $(this).addClass('phover').parent().css("backgroundPosition" , positionX[index] + positionY[2]);
 			})
+		$('#btnlogin').click(function(){
+			//layer.alert('快按钮官网仍在努力的构建中，尽请期待！', 11);
+			$.layer({
+				type : 2,
+				title :false,
+				iframe : {src : '../user/login.html'},
+				area : ['395px' , '380px']
+			});
+			return false;
+		});
+		$('#btnsignup').click(function(){
+			//layer.alert('快按钮官网仍在努力的构建中，尽请期待！', 11);
+			$.layer({
+				type : 2,
+				title :false,
+				iframe : {src : '../user/signup.html'},
+				area : ['395px' , '420px']
+			});
+			return false;
+		});				
 		</script>
     </body>
 </html>

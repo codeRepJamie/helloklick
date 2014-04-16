@@ -1,0 +1,36 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>登录</title>
+<link rel="stylesheet" href="../css/login-regist.css">
+</head>
+<body>
+	<div id="signup" class="rl-modal  in" aria-hidden="false">
+		  <div class="rl-modal-header">
+		    <h3>注册</h3>
+		  </div>
+		  <div class="rl-modal-body">
+		    <form id="signup-form">
+				<div class="rlf-group">
+					<input type="text" name="email" data-validate="email" class="rlf-input rlf-input-email" autocomplete="off" placeholder="请输入登录邮箱">
+					<p class="rlf-tip-wrap">请输入有效的邮箱！</p>
+				</div>
+				<div class="rlf-group">
+					<input type="password" name="password" data-validate="password" class="rlf-input rlf-input-pwd" placeholder="请输入密码">
+					<p class="rlf-tip-wrap">请输入6-16位密码，区分大小写，不能使用空格</p>
+				</div>
+				<div class="rlf-group">
+					<input type="text" name="nick" data-validate="nick" class="rlf-input rlf-input-nick" placeholder="请输入用户昵称">
+					<p class="rlf-tip-wrap">请输入昵称，2-18位中英文、数字或下划线！</p>
+				</div>
+				<div class="rlf-group clearfix">
+					<p class="rlf-tip-wrap" id="signup-globle-error"></p>
+					<!-- <input type="button" id="go-signin-btn" data-fromto="signup:signin" value="返回登录" hidefocus="true" class="rlf-btn-gray l"> -->
+					<input type="button" id="signup-btn" value="注册" hidefocus="true" class="rlf-btn-green l">
+				</div>
+		    </form>
+		  </div>
+		</div>
+</body>
+</html>

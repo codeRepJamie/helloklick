@@ -1,0 +1,42 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>登录</title>
+<link rel="stylesheet" href="../css/login-regist.css">
+</head>
+<body>
+	<div id="signin" class="rl-modal in" aria-hidden="false">
+		  <div class="rl-modal-header">
+	    <h3>登录</h3>
+
+	  </div>
+	  <div class="rl-modal-body">
+	  	<div class="clearfix">
+			<div class="l-left-wrap l">
+				<form id="signup-form">
+					<div class="rlf-group">
+						<input type="text" name="email" data-validate="email" autocomplete="off" class="rlf-input rlf-input-email" placeholder="请输入登录邮箱">
+						<p class="rlf-tip-wrap"></p>
+					</div>
+					<div class="rlf-group">
+						<input type="password" name="password" autocomplete="off" class="rlf-input rlf-input-pwd" placeholder="请输入密码">
+						<p class="rlf-tip-wrap"></p>
+					</div>
+					<div class="rlf-group clearfix">
+						<label for="auto-signin" class="l" hidefocus="true"><input type="checkbox" checked="checked" id="auto-signin">自动登录</label>
+						<a href="javascript:void(0)" class="r" data-fromto="signin:forgetpwd" hidefocus="true">忘记密码？ </a>
+					</div>
+					<div class="rlf-group clearfix">
+						<p class="rlf-tip-wrap " id="signin-globle-error"></p>
+						<!-- <input type="button" id="go-signup-btn" value="立即注册" data-fromto="signin:signup" hidefocus="true" class="rlf-btn-gray l"> -->
+						<input type="button" id="signin-btn" value="登录" hidefocus="true" class="rlf-btn-green l">
+					</div>
+			    </form>
+			</div>
+	  	</div>
+	    
+	  </div>
+	</div>
+</body>
+</html>
